@@ -47,7 +47,7 @@ export default function EditItemModal({ item, open, onClose }: EditItemModalProp
         itemId: item.id,
         name: name.trim(),
         category,
-        quantity: BigInt(qty),
+        quantity: qty,
         pricePerItem: prc,
       });
       toast.success('Item updated successfully');
@@ -94,7 +94,7 @@ export default function EditItemModal({ item, open, onClose }: EditItemModalProp
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose} disabled={updateItem.isPending}>Cancel</Button>
-          <Button onClick={handleSave} disabled={updateItem.isPending} className="bg-brand hover:bg-brand-hover text-white">
+          <Button onClick={handleSave} disabled={updateItem.isPending} className="bg-brand hover:bg-brand/90 text-white">
             {updateItem.isPending ? (
               <span className="flex items-center gap-2">
                 <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />

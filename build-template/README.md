@@ -1,4 +1,4 @@
-## Global Pride International School Stock &amp; Inventory Management
+## 
 
 This source code has been exported from [Caffeine](https://caffeine.ai/)
 

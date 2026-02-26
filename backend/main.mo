@@ -82,9 +82,14 @@ actor {
     inventory.values().toArray().sort();
   };
 
+  // Automatically update stock totals after successful bill addition
   public shared ({ caller }) func createBill(studentName : Text, items : [BillItem], paymentMode : PaymentMode) : async BillId {
     let billId = nextBillId;
     nextBillId += 1;
+
+    for (item in items.values()) {
+      updateInventoryItem(item.itemId, item.quantity);
+    };
 
     let grandTotal = switch (items.size()) {
       case (0) { 0.0 };
@@ -105,6 +110,25 @@ actor {
 
     bills.add(billId, billRecord);
     billId;
+  };
+
+  func updateInventoryItem(itemId : ItemId, quantitySold : Nat) {
+    let item = inventory.get(itemId);
+
+    switch (item) {
+      case (?existingItem) {
+        checkStock(existingItem, quantitySold);
+        let updatedItem : InventoryItem = { existingItem with quantity = existingItem.quantity - quantitySold };
+        inventory.add(itemId, updatedItem);
+      };
+      case (null) { Runtime.trap("Item not found") };
+    };
+  };
+
+  func checkStock(item : InventoryItem, quantitySold : Nat) {
+    if (item.quantity < quantitySold) {
+      Runtime.trap("Insufficient stock for item " # item.name # ". Current stock: " # item.quantity.toText());
+    };
   };
 
   public query ({ caller }) func getBillsByDate(date : Text) : async [BillRecord] {

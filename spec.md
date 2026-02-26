@@ -1,24 +1,10 @@
 # Specification
 
 ## Summary
-**Goal:** Build a desktop web-based Stock & Inventory Management System for Global Pride International School, with hardcoded login, inventory management, billing with print support, date-wise reports, and a summary dashboard — all backed by a persistent Motoko canister.
+**Goal:** Rewrite the authentication guard and the Inventory add-item form from scratch to fix login-on-first-load and broken item creation.
 
 **Planned changes:**
+- Rewrite the authentication guard in App.tsx from scratch: synchronously read the session flag from localStorage on every render of protected routes (Dashboard, Inventory, Billing, Reports); redirect to /login immediately if no valid session is found; redirect to /dashboard if a logged-in user navigates to /login
+- Rewrite the Add Item form on the Inventory page from scratch: fields for Item Name (text, required), Category (select, required), Quantity (positive integer, required), and Price per Item (positive number, required); on submit, call the backend addItem mutation with the correct argument shape, show a success notification, clear the form, and invalidate the inventory query so the table updates immediately; display inline validation errors for empty fields and backend error messages on failure
 
-- **Authentication:** Hardcoded login page (username: `global Pride international school`, password: `gpis@8320`). No sign-up. Session flag stored client-side. All routes redirect to login when unauthenticated. Logout clears session.
-
-- **Backend (Motoko):** Persistent data models for `InventoryItem` (id, name, category, quantity, pricePerItem) and `BillRecord` (id, date, studentName, lineItems, grandTotal, paymentMode). Expose: `addItem`, `updateItem`, `getItems`, `createBill` (with stock validation and deduction), `getBillsByDate`, and a dashboard stats query (totalItems, totalStock, todaySold, todayIncome).
-
-- **Dashboard page:** Four summary cards — Total Items in Inventory, Total Stock Available, Total Stock Sold Today, Total Income Today — fetched from the backend.
-
-- **Inventory page:** Add Item form (name, category, quantity, price per item). Items table with columns: Item Name, Category, Quantity Available, Amount per Item, Actions. Edit item via modal/inline form. Update Stock action to increment existing quantity.
-
-- **Billing page:** Form with Student Name, Payment Mode (Cash/UPI), dynamic line items (item selector from inventory, quantity input, auto-calculated subtotal), auto-calculated Grand Total. Submit deducts stock and saves bill. Print Bill triggers browser print with a clean layout showing Student Name, line items, grand total, and payment mode — no school name or logo. Error shown and submission blocked if requested quantity exceeds stock. Form resets after successful submission.
-
-- **Reports page:** Date picker to select a day. Displays a table of items sold (Item Name, Quantity Sold, Amount Earned per Item), summary totals (Grand Total, Total Units Sold, Total Income), and remaining stock per item. Shows "No records" message when no sales exist for the selected date.
-
-- **Navigation:** Sidebar or top nav with links to Dashboard, Inventory, Billing, and Report. Active page highlighted. Logout button on every authenticated page.
-
-- **Visual theme:** Clean, professional design using warm neutrals (whites, soft greys) with a deep teal or forest green accent. Card-based layouts, consistent typography, subtle shadows. No blue or purple as primary accent.
-
-**User-visible outcome:** An authenticated school administrator can manage inventory items, generate and print student bills (with automatic stock deduction), view a daily dashboard summary, and pull date-wise sales reports — all from a clean desktop web interface.
+**User-visible outcome:** The login page always appears first when opening the app or after logout, with no way to reach protected pages without a session. Adding items from the Inventory page works correctly and the new item appears in the table immediately after submission.

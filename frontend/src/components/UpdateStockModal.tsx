@@ -30,7 +30,7 @@ export default function UpdateStockModal({ item, open, onClose }: UpdateStockMod
         itemId: item.id,
         name: item.name,
         category: item.category,
-        quantity: BigInt(newQty),
+        quantity: newQty,
         pricePerItem: item.pricePerItem,
       });
       toast.success(`Stock updated! New quantity: ${newQty}`);
@@ -75,7 +75,7 @@ export default function UpdateStockModal({ item, open, onClose }: UpdateStockMod
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={handleClose} disabled={updateItem.isPending}>Cancel</Button>
-          <Button onClick={handleUpdate} disabled={updateItem.isPending} className="bg-brand hover:bg-brand-hover text-white">
+          <Button onClick={handleUpdate} disabled={updateItem.isPending} className="bg-brand hover:bg-brand/90 text-white">
             {updateItem.isPending ? (
               <span className="flex items-center gap-2">
                 <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />

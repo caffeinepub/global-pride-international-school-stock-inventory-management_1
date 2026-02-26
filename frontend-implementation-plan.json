@@ -1,214 +1,42 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Global Pride International School — Stock & Inventory Management System (Frontend)",
+  "title": "From-scratch rewrite of authentication guard and inventory add-item functionality",
   "requirements": [
     {
-      "id": "REQ-1",
-      "summary": "Implement hardcoded login with session management and route protection",
+      "id": "REQ-16",
+      "summary": "Completely rewrite the authentication guard in App.tsx from scratch to synchronously check localStorage session on every protected route render and immediately redirect to /login if no valid session exists",
       "acceptanceCriteria": [
-        "Login page is shown when visiting the app unauthenticated.",
-        "Only the exact username and password combination grants access.",
-        "Incorrect credentials display a visible error message.",
-        "No sign-up or registration option is present.",
-        "All protected routes redirect to login when session is not active.",
-        "A logout option is available from within the app."
+        "Opening the app with no session in localStorage always lands on /login",
+        "Navigating directly to /dashboard, /inventory, /billing, or /reports without a session redirects to /login",
+        "After logging in, navigating to /login redirects to /dashboard",
+        "After logout, all protected routes redirect to /login",
+        "No flicker or momentary render of a protected page before redirect"
       ],
       "file_operations": [
-        {
-          "path": "frontend/src/components/Login.tsx",
-          "operation": "create",
-          "description": "Create a login page component that accepts hardcoded credentials (username: 'global Pride international school', password: 'gpis@8320'). On successful login, store a session flag in localStorage and redirect to /dashboard. On failure, display a clear error message. Include no sign-up option or link."
-        },
-        {
-          "path": "frontend/src/hooks/useAuth.ts",
-          "operation": "create",
-          "description": "Create an authentication hook that manages session state using localStorage. Provide functions: login (validates credentials and sets session), logout (clears session), and isAuthenticated (checks session presence). Export the hook for use across the app."
-        },
-        {
-          "path": "frontend/src/components/ProtectedRoute.tsx",
-          "operation": "create",
-          "description": "Create a ProtectedRoute wrapper component that checks authentication status using useAuth. If the user is not authenticated, redirect to /login. Otherwise, render the protected child component."
-        },
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Set up React Router with routes for /login (public), /dashboard, /inventory, /billing, and /reports (all protected). Wrap protected routes with ProtectedRoute. Configure the root route to redirect unauthenticated users to /login and authenticated users to /dashboard."
+          "description": "Rewrite the authentication guard from scratch. Remove the existing beforeLoad auth logic. Implement a new synchronous session check that reads from localStorage on every render of protected routes. Ensure the root '/' route redirects to /login when no session exists and to /dashboard when authenticated. Ensure /login redirects to /dashboard when already authenticated. Configure the protected layout route to use a beforeLoad guard that synchronously reads the session flag from localStorage and immediately redirects to /login if the flag is missing or invalid, preventing any protected component from mounting."
         }
       ]
     },
     {
-      "id": "REQ-3",
-      "summary": "Build a Dashboard page displaying four summary cards with auto-refreshed backend data",
+      "id": "REQ-17",
+      "summary": "Completely rewrite the Add Item form on the Inventory page from scratch to collect all required fields, validate inputs, call addItem mutation with correct argument shape, display notifications, clear form, and invalidate inventory query",
       "acceptanceCriteria": [
-        "Four clearly labeled summary cards are shown on the Dashboard.",
-        "Each card displays the correct value fetched from the backend.",
-        "Data refreshes without a full page reload when navigating to the Dashboard.",
-        "Loading and error states are handled gracefully."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/Dashboard.tsx",
-          "operation": "create",
-          "description": "Create a Dashboard page component that fetches summary data from the backend getTotals method. Display four cards: Total Number of Items in Inventory, Total Stock Available, Total Stock Sold Today, and Total Income Today. Handle loading and error states gracefully. Use React state and useEffect to fetch data on mount."
-        },
-        {
-          "path": "frontend/src/components/SummaryCard.tsx",
-          "operation": "create",
-          "description": "Create a reusable SummaryCard component that accepts a title and value prop. Apply consistent card styling (border, shadow, padding) matching the design theme. Display the title and value in a clear, legible format."
-        }
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "summary": "Build an Inventory page for adding, viewing, editing, and updating stock",
-      "acceptanceCriteria": [
-        "Add Item form collects name, quantity (numeric), price per item (numeric), and category (selectable).",
-        "Submitted items appear immediately in the inventory table.",
-        "Table shows Item Name, Category, Quantity Available, Amount per Item, and action buttons.",
-        "Edit action opens a form pre-filled with item data; saving updates the backend record.",
-        "Update Stock action allows entering additional units to add to existing quantity.",
-        "All changes reflect in real-time in the table without full page reload."
+        "Filling in all fields and clicking Add Item successfully creates the item on the backend",
+        "The new item appears in the inventory table immediately after submission without a manual page refresh",
+        "Submitting with any field empty shows an inline validation error and does not call the backend",
+        "A success toast or notification is displayed after a successful add",
+        "The form resets to empty state after a successful submission",
+        "If the backend returns an error, a clear error message is displayed to the user"
       ],
       "file_operations": [
         {
           "path": "frontend/src/pages/Inventory.tsx",
-          "operation": "create",
-          "description": "Create an Inventory page component that displays an Add Item form (Item Name, Quantity, Amount per Item, Category dropdown) and a table of all inventory items. Fetch items from backend getItems on mount. Submitting the form calls backend addItem and refreshes the table. Include Edit and Update Stock action buttons in the table rows."
-        },
-        {
-          "path": "frontend/src/components/InventoryTable.tsx",
-          "operation": "create",
-          "description": "Create an InventoryTable component that accepts an array of InventoryItem objects and displays them in a table with columns: Item Name, Category, Quantity Available, Amount per Item, and Actions. Include Edit and Update Stock buttons in the Actions column. Emit events when action buttons are clicked."
-        },
-        {
-          "path": "frontend/src/components/EditItemModal.tsx",
-          "operation": "create",
-          "description": "Create an EditItemModal component that accepts an InventoryItem and opens a modal form pre-filled with its data. Allow editing name, category, quantity, and pricePerItem. On save, call backend updateItem and close the modal. Handle validation and error states."
-        },
-        {
-          "path": "frontend/src/components/UpdateStockModal.tsx",
-          "operation": "create",
-          "description": "Create an UpdateStockModal component that accepts an InventoryItem and displays a form to add additional units to the current quantity. On save, calculate the new quantity (existing + additional) and call backend updateItem. Close the modal and refresh the inventory list."
-        }
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "summary": "Build a Billing page for creating and printing bills with stock deduction",
-      "acceptanceCriteria": [
-        "Student Name field is required before bill submission.",
-        "Payment Mode selector offers exactly 'Cash' and 'UPI'.",
-        "Item selector is populated from live inventory data.",
-        "Entering a quantity immediately calculates and displays the subtotal for that line.",
-        "Grand Total updates automatically as line items are added or quantities change.",
-        "Attempting to bill more units than available stock shows a clear error and blocks submission.",
-        "Successful submission deducts quantities from inventory and stores the bill.",
-        "Print Bill triggers the browser print dialog with a formatted bill layout.",
-        "Printed bill contains: Student Name, line items (name, quantity, subtotal), grand total, payment mode.",
-        "Printed bill does NOT contain school name or school logo.",
-        "After a successful bill, the form resets for the next transaction."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/Billing.tsx",
-          "operation": "create",
-          "description": "Create a Billing page component with fields for Student Name and Payment Mode (Cash/UPI selector). Display a dynamic list of line items where each line has an item selector (populated from backend getItems), quantity input, and calculated subtotal. Include an Add More Items button. Display auto-calculated Grand Total. On submit, validate stock availability, call backend createBill, handle success/error, and reset the form. Include a Print Bill button that triggers window.print() on a print-friendly bill layout."
-        },
-        {
-          "path": "frontend/src/components/BillLineItem.tsx",
-          "operation": "create",
-          "description": "Create a BillLineItem component for a single line in the billing form. Accept item selector, quantity input, and display calculated subtotal (quantity × pricePerItem). Emit events when item or quantity changes. Validate that selected quantity does not exceed available stock and show inline error if exceeded."
-        },
-        {
-          "path": "frontend/src/components/PrintableBill.tsx",
-          "operation": "create",
-          "description": "Create a PrintableBill component that renders a print-friendly bill layout containing: Student Name, line items table (Item Name, Quantity, Subtotal), Grand Total, and Payment Mode. Use CSS @media print rules to hide non-printable UI elements. Ensure no school name or school logo appears in the printable output."
-        },
-        {
-          "path": "frontend/src/index.css",
           "operation": "modify",
-          "description": "Add @media print CSS rules to hide navigation, buttons, and form elements during print, and ensure PrintableBill content is formatted cleanly for printing (no colors, simple borders, readable fonts)."
-        }
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "summary": "Build a Reports page with date-wise sales and stock reporting",
-      "acceptanceCriteria": [
-        "A date picker allows the user to select any date.",
-        "Selecting a date fetches and displays all sales for that date.",
-        "Table shows Item Name, Quantity Sold, and Amount Earned per Item.",
-        "Summary section shows: Grand Total of the Day, Total Units Sold, Total Income.",
-        "A separate section shows remaining stock per item (current inventory quantities).",
-        "If no sales exist for the selected date, a clear 'No records' message is shown.",
-        "Loading and error states are handled gracefully."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/Reports.tsx",
-          "operation": "create",
-          "description": "Create a Reports page component with a date picker input. On date selection, fetch bills from backend getBillsByDate (formatted as YYYY-MM-DD). Aggregate bill data to calculate per-item sold quantities and amounts. Display a table of items sold (Item Name, Quantity Sold, Amount Earned). Display summary cards: Grand Total of the Day, Total Stock Sold (units), Total Income. Fetch current inventory from backend getItems and display remaining stock per item in a separate section. Show a 'No records' message if no bills exist for the selected date. Handle loading and error states."
-        },
-        {
-          "path": "frontend/src/components/ReportSummary.tsx",
-          "operation": "create",
-          "description": "Create a ReportSummary component that accepts aggregated report data and displays summary metrics in card format: Grand Total, Total Units Sold, Total Income. Use consistent card styling matching the theme."
-        },
-        {
-          "path": "frontend/src/components/SalesTable.tsx",
-          "operation": "create",
-          "description": "Create a SalesTable component that accepts an array of aggregated sales data and displays a table with columns: Item Name, Quantity Sold, Amount Earned per Item. Apply consistent table styling."
-        },
-        {
-          "path": "frontend/src/components/RemainingStockTable.tsx",
-          "operation": "create",
-          "description": "Create a RemainingStockTable component that accepts current inventory data and displays a table showing Item Name and Quantity Available. Apply consistent table styling."
-        }
-      ]
-    },
-    {
-      "id": "REQ-7",
-      "summary": "Implement consistent navigation layout with logout across all authenticated pages",
-      "acceptanceCriteria": [
-        "Navigation links to all four modules are always visible when authenticated.",
-        "Active/current page is visually highlighted in the nav.",
-        "Logout button is accessible from the nav on every page.",
-        "Clicking Logout clears the session and redirects to the login page."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/Layout.tsx",
-          "operation": "create",
-          "description": "Create a Layout component that wraps authenticated pages with a consistent navigation sidebar or top nav. Include links to Dashboard, Inventory, Billing, and Reports. Highlight the active route visually. Include a Logout button that calls useAuth logout and redirects to /login. Render children content in the main area."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Wrap all protected routes (Dashboard, Inventory, Billing, Reports) with the Layout component so navigation and logout are consistently available on every authenticated page."
-        }
-      ]
-    },
-    {
-      "id": "REQ-8",
-      "summary": "Apply a clean, professional design theme with warm neutral palette and consistent styling",
-      "acceptanceCriteria": [
-        "A cohesive color palette is applied consistently across all pages.",
-        "Typography is legible and consistent across headings, labels, and body text.",
-        "Cards, tables, and forms use consistent spacing and border/shadow styles.",
-        "The design does not use blue or purple as primary accent colors.",
-        "The interface looks clean and uncluttered on desktop screen sizes."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/tailwind.config.js",
-          "operation": "modify",
-          "description": "Extend the Tailwind theme with a warm neutral color palette: whites, soft greys, and a single accent color (deep teal or forest green). Define custom colors for background, card, text, and accent. Ensure no blue or purple primary accent colors are used. Configure consistent spacing, border radius, and shadow tokens."
-        },
-        {
-          "path": "frontend/src/index.css",
-          "operation": "modify",
-          "description": "Apply global typography styles for headings, labels, and body text using legible sans-serif fonts. Set default text color to a soft dark grey. Apply consistent card base styles (background, padding, border, shadow) and table base styles (borders, row hover states). Ensure all elements use the warm neutral palette defined in Tailwind config."
+          "description": "Completely rewrite the Add Item form from scratch. Remove all existing add-item form logic. Implement a new controlled form with four fields: Item Name (text input, required), Category (select dropdown using categories from frontend/src/lib/constants.ts, required), Quantity (number input for positive integers, required), and Price per Item (number input for positive numbers, required). Add inline validation that checks all fields are filled before enabling submit. On submit, call the useAddItem mutation hook with arguments matching the backend interface signature: addItem(name: string, category: ItemCategory, quantity: bigint, pricePerItem: number). After successful mutation, display a success toast notification, clear all form fields to empty state, and explicitly invalidate the inventory query using queryClient.invalidateQueries so the InventoryTable re-fetches and displays the new item. Handle mutation errors by displaying a clear error message to the user. Verify the useAddItem hook from frontend/src/hooks/useQueries.ts returns the correct mutation shape before implementing."
         }
       ]
     }

@@ -1,15 +1,21 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 3,
+  "projectStateVersion": 11,
   "summary": "Stock & Inventory Management System for Global Pride International School — a web app with secure login (username: 'global Pride international school', password: 'gpis@8320'), Dashboard (total items, stock, today's sales & income), Inventory (add/edit/update items with name, quantity, price, category), Billing (item selection, auto-calculate subtotal/grand total, student name, payment mode, print support — no school logo/name on bill), and Reports (date-wise sales: items sold, quantities, earnings, daily totals, remaining stock). Data persists on the Internet Computer backend; billing auto-reduces inventory stock with error handling for overselling.",
   "architectural_notes": [
     "Persistent backend on the Internet Computer (ICP) for inventory, billing, and report data",
     "Hardcoded login credentials — no auth library or sign-up flow needed",
     "Billing must NOT include school logo or school name on printed bill",
-    "Stock quantity must auto-decrement on each billing transaction with oversell guard"
+    "Stock quantity must auto-decrement on each billing transaction with oversell guard",
+    "Login page must always appear first; all routes must redirect to login if no session flag is found",
+    "Auth guard and inventory add-item must be rewritten from scratch — patching existing code has not resolved the issues"
   ],
-  "known_issues": [],
-  "isFixRequest": false,
+  "known_issues": [
+    "Login page not appearing on app load — authentication guard not blocking unauthenticated access",
+    "Billing flow unclear — submit button must auto-save bill and then show a prominent 'Proceed to Print' button",
+    "Inventory add-item functionality broken — items cannot be added from the Inventory page"
+  ],
+  "isFixRequest": true,
   "existing_features": [
     {
       "id": "feature-implement-a-hardcoded-login-page-that-accepts-only-username-global-pride-international-school-and-password-gpis-8320-there-must-be-no-sign-up-option-on-successful-login-store-a-session-flag-and-redirect-to-the-dashboard-on-failure-show-a-clear-error-message-all-other-pages-must-redirect-to-the-login-page-if-the-user-is-not-authenticated",
@@ -66,6 +72,78 @@
         "REQ-8"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-on-the-billing-page-make-the-add-item-button-visually-prominent-and-clearly-visible-at-all-times-it-should-use-a-distinct-accent-color-e-g-deep-teal-or-forest-green-sufficient-size-and-a-clear-label-e-g-add-item-so-users-can-easily-identify-and-click-it-to-add-more-line-items-to-the-bill",
+      "title": "On the Billing page, make the 'Add Item' button visually prominent and clearly visible at all times. It should use a distinct accent color (e.g., deep teal or forest green), sufficient size, and a clear label (e.g., '+ Add Item') so users can easily identify and click it to add more line items to the bill.",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-on-the-billing-page-after-a-bill-is-successfully-submitted-display-a-clearly-visible-print-bill-button-the-button-must-be-styled-prominently-accent-color-adequate-size-clear-label-and-should-appear-in-a-noticeable-position-e-g-in-a-success-state-section-or-modal-so-the-user-can-easily-locate-and-trigger-it-to-print-the-bill",
+      "title": "On the Billing page, after a bill is successfully submitted, display a clearly visible 'Print Bill' button. The button must be styled prominently (accent color, adequate size, clear label) and should appear in a noticeable position — e.g., in a success state section or modal — so the user can easily locate and trigger it to print the bill.",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-that-when-a-bill-is-submitted-on-the-billing-page-the-inventory-stock-quantities-are-automatically-and-immediately-reduced-on-the-backend-for-each-billed-item-after-submission-any-refetch-of-inventory-data-must-reflect-the-updated-lower-quantities-if-the-backend-mutation-already-performs-this-deduction-verify-and-fix-the-frontend-query-invalidation-so-that-inventory-data-is-refreshed-automatically-after-a-successful-bill-creation",
+      "title": "Ensure that when a bill is submitted on the Billing page, the inventory stock quantities are automatically and immediately reduced on the backend for each billed item. After submission, any refetch of inventory data must reflect the updated (lower) quantities. If the backend mutation already performs this deduction, verify and fix the frontend query invalidation so that inventory data is refreshed automatically after a successful bill creation.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-authentication-guard-so-that-the-login-page-always-appears-when-the-app-is-first-opened-all-protected-routes-dashboard-inventory-billing-reports-must-redirect-to-the-login-page-if-no-valid-session-flag-is-found-in-localstorage-users-must-not-be-able-to-reach-any-page-other-than-the-login-page-without-first-entering-the-correct-credentials",
+      "title": "Fix the authentication guard so that the login page always appears when the app is first opened. All protected routes (Dashboard, Inventory, Billing, Reports) must redirect to the login page if no valid session flag is found in localStorage. Users must not be able to reach any page other than the login page without first entering the correct credentials.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-billing-page-flow-so-that-clicking-the-submit-button-automatically-saves-the-bill-to-the-backend-deducting-stock-for-each-billed-item-and-then-immediately-displays-a-prominent-proceed-to-print-button-in-a-clearly-visible-success-state-the-separate-save-and-print-actions-must-be-sequential-save-happens-on-submit-and-print-is-only-offered-after-a-successful-save",
+      "title": "Update the Billing page flow so that clicking the submit button automatically saves the bill to the backend (deducting stock for each billed item) and then immediately displays a prominent 'Proceed to Print' button in a clearly visible success state. The separate save and print actions must be sequential: save happens on submit, and print is only offered after a successful save.",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-authentication-guard-in-app-tsx-so-that-the-login-page-is-always-shown-when-the-app-is-first-opened-or-when-no-valid-session-flag-exists-in-localstorage-the-protected-layout-route-must-check-for-the-session-flag-on-every-render-and-immediately-redirect-unauthenticated-users-to-login-before-any-protected-page-dashboard-inventory-billing-reports-is-rendered-or-mounted",
+      "title": "Fix the authentication guard in App.tsx so that the login page is always shown when the app is first opened or when no valid session flag exists in localStorage. The protected layout route must check for the session flag on every render and immediately redirect unauthenticated users to /login before any protected page (Dashboard, Inventory, Billing, Reports) is rendered or mounted.",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-add-item-form-on-the-inventory-page-so-that-submitting-the-form-item-name-category-quantity-price-successfully-calls-the-backend-additem-mutation-persists-the-new-item-and-refreshes-the-inventory-table-identify-and-resolve-any-validation-errors-mutation-wiring-issues-or-query-invalidation-gaps-that-prevent-the-item-from-being-created",
+      "title": "Fix the Add Item form on the Inventory page so that submitting the form (item name, category, quantity, price) successfully calls the backend addItem mutation, persists the new item, and refreshes the inventory table. Identify and resolve any validation errors, mutation wiring issues, or query-invalidation gaps that prevent the item from being created.",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-completely-rewrite-the-authentication-guard-in-app-tsx-from-scratch-on-every-render-of-any-protected-route-dashboard-inventory-billing-reports-synchronously-read-the-session-flag-from-localstorage-if-no-valid-session-flag-is-found-immediately-redirect-to-login-before-mounting-any-protected-page-component-the-login-page-must-always-be-the-first-screen-seen-when-the-app-is-opened-fresh-or-after-logout-there-must-be-zero-path-by-which-an-unauthenticated-user-can-reach-a-protected-page",
+      "title": "Completely rewrite the authentication guard in App.tsx from scratch. On every render of any protected route (Dashboard, Inventory, Billing, Reports), synchronously read the session flag from localStorage. If no valid session flag is found, immediately redirect to /login before mounting any protected page component. The login page must always be the first screen seen when the app is opened fresh or after logout. There must be zero path by which an unauthenticated user can reach a protected page.",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-completely-rewrite-the-add-item-form-on-the-inventory-page-from-scratch-the-form-must-collect-item-name-text-required-category-select-from-constants-list-required-quantity-positive-integer-required-and-price-per-item-positive-number-required-on-submit-the-form-must-call-the-backend-additem-mutation-with-the-correct-argument-shape-await-the-result-show-a-success-notification-clear-the-form-fields-and-invalidate-the-inventory-query-so-the-table-immediately-reflects-the-new-item-eliminate-all-previous-validation-errors-mutation-wiring-issues-and-query-invalidation-gaps",
+      "title": "Completely rewrite the Add Item form on the Inventory page from scratch. The form must collect Item Name (text, required), Category (select from constants list, required), Quantity (positive integer, required), and Price per Item (positive number, required). On submit, the form must call the backend addItem mutation with the correct argument shape, await the result, show a success notification, clear the form fields, and invalidate the inventory query so the table immediately reflects the new item. Eliminate all previous validation errors, mutation wiring issues, and query-invalidation gaps.",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -111,6 +189,12 @@
       "reqIds": [
         "REQ-2"
       ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Make 'Add Item' button clearly visible on Billing page; make 'Print Bill' button clearly visible after billing; ensure stock auto-updates after bill submission",
+      "reqIds": [],
       "status": "pending"
     }
   ],

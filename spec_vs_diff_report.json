@@ -1,84 +1,24 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-26T04:01:38.886Z",
-  "summary": "The diff implements most required features including login, backend models, dashboard, inventory, billing, reports, navigation layout, and visual theme. However, several critical backend requirements are missing or incomplete: stock validation in createBill is absent, data persistence across upgrades (stable storage) is not implemented, date in createBill is hardcoded, and getTotals does not compute today's sold/income stats. Additionally, Internet Identity infrastructure is included despite being explicitly prohibited.",
+  "generatedAt": "2026-02-26T04:59:54.036Z",
+  "summary": "Both REQ-16 and REQ-17 appear to be substantially implemented. App.tsx has been rewritten with synchronous localStorage checks and AuthGuard/LoginGuard components. Inventory.tsx has been rewritten with per-field validation, mutateAsync, query invalidation, and toast notifications. There is a potential partial gap in REQ-16 regarding the no-flicker AC, as the redirect uses useEffect rather than a true synchronous before-mount mechanism, though the guard does return null synchronously when unauthenticated.",
   "missing_requirements": [
     {
-      "id": "REQ-2",
-      "requirement": "createBill must validate sufficient stock, return an error if requested quantity exceeds available stock, and deduct sold quantities from inventory.",
-      "reason": "The backend createBill function in main.mo does not perform any stock validation or stock deduction. It simply stores the bill without checking or modifying inventory quantities.",
+      "id": "REQ-16",
+      "requirement": "No flicker or momentary render of a protected page before redirect — redirect must happen before mounting any protected page component",
+      "reason": "AuthGuard uses useEffect to trigger navigation, which fires after the component renders. While the guard returns null synchronously when isAuth is false (preventing protected children from rendering), the navigate call inside useEffect is inherently asynchronous and does not constitute a true before-mount redirect. This partially violates the AC requiring zero flicker or momentary render before redirect.",
       "evidence": [
-        "backend/main.mo"
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "requirement": "InventoryItem and BillRecord must persist across canister upgrades (stable storage).",
-      "reason": "The inventory and bills variables are declared with 'let' using Map.empty() without the 'stable' keyword or pre/postupgrade hooks, meaning data will not survive canister upgrades.",
-      "evidence": [
-        "backend/main.mo"
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "requirement": "getTotals (dashboard stats) must return correct totalStockSoldToday and totalIncomeToday computed from today's bills.",
-      "reason": "The getTotals function hardcodes totalStockSoldToday=0 and totalIncomeToday=0.0 and does not compute them from bill records filtered by today's date.",
-      "evidence": [
-        "backend/main.mo"
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "requirement": "createBill must record the actual current date in the BillRecord.",
-      "reason": "The createBill function hardcodes date = \"2023-10-10\" instead of capturing the current date dynamically.",
-      "evidence": [
-        "backend/main.mo"
+        "frontend/src/App.tsx"
       ]
     }
   ],
-  "hallucinated_features": [
-    {
-      "description": "Internet Identity authentication infrastructure including useInternetIdentity hook, AuthClient, DelegationIdentity, and useActor integrating with II identity.",
-      "reason": "The build request explicitly prohibits Internet Identity or any external authentication provider. Despite this, the diff includes a full useInternetIdentity.ts provider and useActor.ts that integrates with it.",
-      "evidence": [
-        "frontend/src/hooks/useInternetIdentity.ts",
-        "frontend/src/hooks/useActor.ts"
-      ]
-    }
-  ],
-  "confidence": 0.75,
+  "hallucinated_features": [],
+  "confidence": 0.78,
   "changed_files": [
-    "all_files_summary.json",
-    "backend/main.mo",
     "frontend-file-summaries.txt",
-    "frontend/index.css",
-    "frontend/index.html",
     "frontend/src/App.tsx",
-    "frontend/src/components/BillLineItem.tsx",
-    "frontend/src/components/EditItemModal.tsx",
-    "frontend/src/components/InventoryTable.tsx",
-    "frontend/src/components/Layout.tsx",
-    "frontend/src/components/Login.tsx",
-    "frontend/src/components/PrintableBill.tsx",
-    "frontend/src/components/RemainingStockTable.tsx",
-    "frontend/src/components/ReportSummary.tsx",
-    "frontend/src/components/SalesTable.tsx",
-    "frontend/src/components/SummaryCard.tsx",
-    "frontend/src/components/UpdateStockModal.tsx",
-    "frontend/src/hooks/useActor.ts",
-    "frontend/src/hooks/useAuth.ts",
-    "frontend/src/hooks/useInternetIdentity.ts",
-    "frontend/src/hooks/useQueries.ts",
-    "frontend/src/index.css",
-    "frontend/src/lib/constants.ts",
-    "frontend/src/lib/utils.ts",
-    "frontend/src/main.tsx",
-    "frontend/src/pages/Billing.tsx",
-    "frontend/src/pages/Dashboard.tsx",
     "frontend/src/pages/Inventory.tsx",
-    "frontend/src/pages/Reports.tsx",
-    "frontend/tailwind.config.js",
     "project_state.json"
   ]
 }
