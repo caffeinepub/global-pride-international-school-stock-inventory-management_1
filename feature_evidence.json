@@ -1,0 +1,145 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-implement-a-hardcoded-login-page-that-accepts-only-username-global-pride-international-school-and-password-gpis-8320-there-must-be-no-sign-up-option-on-successful-login-store-a-session-flag-and-redirect-to-the-dashboard-on-failure-show-a-clear-error-message-all-other-pages-must-redirect-to-the-login-page-if-the-user-is-not-authenticated",
+      "featureTitle": "Implement a hardcoded login page that accepts only username 'global Pride international school' and password 'gpis@8320'. There must be no sign-up option. On successful login, store a session flag and redirect to the Dashboard. On failure, show a clear error message. All other pages must redirect to the login page if the user is not authenticated.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/Login.tsx",
+        "frontend/src/hooks/useAuth.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-build-a-dashboard-page-accessible-after-login-that-displays-four-summary-cards-total-number-of-items-in-inventory-total-stock-available-sum-of-all-quantities-total-stock-sold-today-and-total-income-today-data-must-be-fetched-from-the-backend-and-refreshed-automatically",
+      "featureTitle": "Build a Dashboard page (accessible after login) that displays four summary cards: Total Number of Items in Inventory, Total Stock Available (sum of all quantities), Total Stock Sold Today, and Total Income Today. Data must be fetched from the backend and refreshed automatically.",
+      "files": [
+        "frontend/src/components/SummaryCard.tsx",
+        "frontend/src/pages/Dashboard.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-build-an-inventory-page-that-allows-the-user-to-1-add-new-items-by-entering-item-name-quantity-amount-price-per-item-and-selecting-a-category-2-view-all-items-in-a-table-with-columns-item-name-category-quantity-available-amount-per-item-and-an-actions-column-3-edit-any-item-s-details-inline-or-via-a-modal-4-update-stock-quantity-when-new-stock-arrives-increment-existing-quantity-changes-must-persist-to-the-backend",
+      "featureTitle": "Build an Inventory page that allows the user to: (1) Add new items by entering Item Name, Quantity, Amount (price per item), and selecting a Category; (2) View all items in a table with columns: Item Name, Category, Quantity Available, Amount per Item, and an Actions column; (3) Edit any item's details inline or via a modal; (4) Update stock quantity when new stock arrives (increment existing quantity). Changes must persist to the backend.",
+      "files": [
+        "frontend/src/components/EditItemModal.tsx",
+        "frontend/src/components/InventoryTable.tsx",
+        "frontend/src/components/UpdateStockModal.tsx",
+        "frontend/src/pages/Inventory.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-build-a-billing-page-where-the-user-can-1-enter-a-student-name-2-select-a-payment-mode-cash-or-upi-3-select-items-from-the-full-inventory-list-enter-quantity-per-item-and-see-subtotal-auto-calculated-as-quantity-priceperitem-4-add-more-line-items-with-an-add-item-button-5-see-grand-total-auto-calculated-as-sum-of-all-subtotals-6-submit-the-bill-which-deducts-stock-from-the-backend-and-stores-the-bill-record-7-print-the-bill-the-printed-output-must-show-student-name-each-item-name-quantity-subtotal-grand-total-and-payment-mode-but-must-not-include-any-school-name-or-school-logo",
+      "featureTitle": "Build a Billing page where the user can: (1) Enter a Student Name; (2) Select a Payment Mode (Cash or UPI); (3) Select items from the full inventory list, enter quantity per item, and see Subtotal auto-calculated as quantity × pricePerItem; (4) Add more line items with an 'Add Item' button; (5) See Grand Total auto-calculated as sum of all subtotals; (6) Submit the bill, which deducts stock from the backend and stores the bill record; (7) Print the bill — the printed output must show Student Name, each Item Name, Quantity, Subtotal, Grand Total, and Payment Mode, but must NOT include any school name or school logo.",
+      "files": [
+        "frontend/src/components/BillLineItem.tsx",
+        "frontend/src/components/PrintableBill.tsx",
+        "frontend/src/index.css",
+        "frontend/src/pages/Billing.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-build-a-reports-page-where-the-user-can-select-a-date-and-view-a-report-for-that-day-showing-a-table-of-items-sold-item-name-quantity-sold-amount-earned-per-item-the-grand-total-earned-for-the-day-total-stock-sold-total-units-across-all-items-remaining-stock-per-item-and-total-income-for-the-day-data-is-fetched-from-backend-bill-records-filtered-by-the-selected-date",
+      "featureTitle": "Build a Reports page where the user can select a date and view a report for that day showing: a table of items sold (Item Name, Quantity Sold, Amount Earned per Item), the Grand Total earned for the day, Total Stock Sold (total units across all items), Remaining Stock per item, and Total Income for the day. Data is fetched from backend bill records filtered by the selected date.",
+      "files": [
+        "frontend/src/components/RemainingStockTable.tsx",
+        "frontend/src/components/ReportSummary.tsx",
+        "frontend/src/components/SalesTable.tsx",
+        "frontend/src/pages/Reports.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-a-consistent-navigation-layout-sidebar-or-top-nav-with-links-to-dashboard-inventory-billing-and-report-modules-visible-on-all-authenticated-pages-include-a-logout-button-that-clears-the-session-and-returns-the-user-to-the-login-page",
+      "featureTitle": "Implement a consistent navigation layout (sidebar or top nav) with links to Dashboard, Inventory, Billing, and Report modules, visible on all authenticated pages. Include a Logout button that clears the session and returns the user to the login page.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/Layout.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-7"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-apply-a-clean-professional-visual-theme-throughout-the-app-using-a-warm-neutral-palette-e-g-whites-soft-greys-and-a-single-accent-color-such-as-deep-teal-or-forest-green-use-clear-typography-consistent-card-based-layouts-and-subtle-shadows-the-design-should-feel-institutional-and-user-friendly-appropriate-for-a-school-administration-tool",
+      "featureTitle": "Apply a clean, professional visual theme throughout the app using a warm neutral palette (e.g., whites, soft greys, and a single accent color such as deep teal or forest green). Use clear typography, consistent card-based layouts, and subtle shadows. The design should feel institutional and user-friendly — appropriate for a school administration tool.",
+      "files": [
+        "frontend/src/index.css",
+        "frontend/tailwind.config.js"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-8"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

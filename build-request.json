@@ -1,0 +1,221 @@
+{
+  "kind": "build_request",
+  "title": "Global Pride International School — Stock & Inventory Management System",
+  "projectName": "GPIS Inventory",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Implement a hardcoded login page that accepts only username 'global Pride international school' and password 'gpis@8320'. There must be no sign-up option. On successful login, store a session flag and redirect to the Dashboard. On failure, show a clear error message. All other pages must redirect to the login page if the user is not authenticated.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Login should work only with: Username: global Pride international school, Password: gpis@8320",
+          "No sign-up option."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Login page is shown when visiting the app unauthenticated.",
+        "Only the exact username and password combination grants access.",
+        "Incorrect credentials display a visible error message.",
+        "No sign-up or registration option is present.",
+        "All protected routes redirect to login when session is not active.",
+        "A logout option is available from within the app."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Create backend data models and persistent storage in the Motoko actor for: (1) InventoryItem { id, name, category, quantity, pricePerItem }, (2) BillRecord { id, date, studentName, items: [{ itemId, itemName, quantity, subtotal }], grandTotal, paymentMode }, (3) Expose CRUD functions: addItem, updateItem, getItems; createBill, getBillsByDate; and query functions for dashboard stats (totalItems, totalStock, todaySold, todayIncome).",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "All added items must be displayed in a table format",
+          "Data must update automatically when billing reduces stock."
+        ]
+      },
+      "acceptanceCriteria": [
+        "InventoryItem records persist across canister upgrades.",
+        "BillRecord records persist across canister upgrades.",
+        "addItem creates a new inventory item with name, category, quantity, pricePerItem.",
+        "updateItem modifies an existing item's fields.",
+        "getItems returns all inventory items.",
+        "createBill validates that sufficient stock exists for each line item, returns an error if any item's requested quantity exceeds available stock, deducts sold quantities from inventory, and stores the bill record.",
+        "getBillsByDate returns all bills for a given date string (YYYY-MM-DD).",
+        "Dashboard query returns: total distinct items, total units in stock, total units sold today, total income today."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Build a Dashboard page (accessible after login) that displays four summary cards: Total Number of Items in Inventory, Total Stock Available (sum of all quantities), Total Stock Sold Today, and Total Income Today. Data must be fetched from the backend and refreshed automatically.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Total number of items in inventory",
+          "Total stock available",
+          "Total stock sold (today)",
+          "Total income (today)"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Four clearly labeled summary cards are shown on the Dashboard.",
+        "Each card displays the correct value fetched from the backend.",
+        "Data refreshes without a full page reload when navigating to the Dashboard.",
+        "Loading and error states are handled gracefully."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Build an Inventory page that allows the user to: (1) Add new items by entering Item Name, Quantity, Amount (price per item), and selecting a Category; (2) View all items in a table with columns: Item Name, Category, Quantity Available, Amount per Item, and an Actions column; (3) Edit any item's details inline or via a modal; (4) Update stock quantity when new stock arrives (increment existing quantity). Changes must persist to the backend.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Add new items",
+          "All added items must be displayed in a table format",
+          "Option to update stock when new stock arrives.",
+          "Easy edit and update option."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Add Item form collects name, quantity (numeric), price per item (numeric), and category (selectable).",
+        "Submitted items appear immediately in the inventory table.",
+        "Table shows Item Name, Category, Quantity Available, Amount per Item, and action buttons.",
+        "Edit action opens a form pre-filled with item data; saving updates the backend record.",
+        "Update Stock action allows entering additional units to add to existing quantity.",
+        "All changes reflect in real-time in the table without full page reload."
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Build a Billing page where the user can: (1) Enter a Student Name; (2) Select a Payment Mode (Cash or UPI); (3) Select items from the full inventory list, enter quantity per item, and see Subtotal auto-calculated as quantity × pricePerItem; (4) Add more line items with an 'Add Item' button; (5) See Grand Total auto-calculated as sum of all subtotals; (6) Submit the bill, which deducts stock from the backend and stores the bill record; (7) Print the bill — the printed output must show Student Name, each Item Name, Quantity, Subtotal, Grand Total, and Payment Mode, but must NOT include any school name or school logo.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Amount and Subtotal should automatically calculate.",
+          "Add More Items option must be available.",
+          "Grand Total must automatically calculate.",
+          "Print Bill option",
+          "The bill must NOT contain: School logo, School name"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Student Name field is required before bill submission.",
+        "Payment Mode selector offers exactly 'Cash' and 'UPI'.",
+        "Item selector is populated from live inventory data.",
+        "Entering a quantity immediately calculates and displays the subtotal for that line.",
+        "Grand Total updates automatically as line items are added or quantities change.",
+        "Attempting to bill more units than available stock shows a clear error and blocks submission.",
+        "Successful submission deducts quantities from inventory and stores the bill.",
+        "Print Bill triggers the browser print dialog with a formatted bill layout.",
+        "Printed bill contains: Student Name, line items (name, quantity, subtotal), grand total, payment mode.",
+        "Printed bill does NOT contain school name or school logo.",
+        "After a successful bill, the form resets for the next transaction."
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Build a Reports page where the user can select a date and view a report for that day showing: a table of items sold (Item Name, Quantity Sold, Amount Earned per Item), the Grand Total earned for the day, Total Stock Sold (total units across all items), Remaining Stock per item, and Total Income for the day. Data is fetched from backend bill records filtered by the selected date.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Report must be date-wise.",
+          "Items sold",
+          "Quantity sold",
+          "Amount earned per item",
+          "Grand Total of the day",
+          "Total stock sold",
+          "Remaining stock",
+          "Total income of the day"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A date picker allows the user to select any date.",
+        "Selecting a date fetches and displays all sales for that date.",
+        "Table shows Item Name, Quantity Sold, and Amount Earned per Item.",
+        "Summary section shows: Grand Total of the Day, Total Units Sold, Total Income.",
+        "A separate section shows remaining stock per item (current inventory quantities).",
+        "If no sales exist for the selected date, a clear 'No records' message is shown.",
+        "Loading and error states are handled gracefully."
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "text": "Implement a consistent navigation layout (sidebar or top nav) with links to Dashboard, Inventory, Billing, and Report modules, visible on all authenticated pages. Include a Logout button that clears the session and returns the user to the login page.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "4 main modules: Dashboard, Inventory, Billing, Report"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Navigation links to all four modules are always visible when authenticated.",
+        "Active/current page is visually highlighted in the nav.",
+        "Logout button is accessible from the nav on every page.",
+        "Clicking Logout clears the session and redirects to the login page."
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "text": "Apply a clean, professional visual theme throughout the app using a warm neutral palette (e.g., whites, soft greys, and a single accent color such as deep teal or forest green). Use clear typography, consistent card-based layouts, and subtle shadows. The design should feel institutional and user-friendly — appropriate for a school administration tool.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Website must be simple and user-friendly.",
+          "Clean interface.",
+          "Simple and clean interface."
+        ]
+      },
+      "acceptanceCriteria": [
+        "A cohesive color palette is applied consistently across all pages.",
+        "Typography is legible and consistent across headings, labels, and body text.",
+        "Cards, tables, and forms use consistent spacing and border/shadow styles.",
+        "The design does not use blue or purple as primary accent colors.",
+        "The interface looks clean and uncluttered on desktop screen sizes."
+      ]
+    }
+  ],
+  "constraints": [
+    "Login credentials are hardcoded: username = 'global Pride international school', password = 'gpis@8320'. Do not use Internet Identity or any external auth.",
+    "Printed bills must never include school name or school logo.",
+    "Billing must prevent selling more stock than is available — show a clear error and block the transaction.",
+    "All data (inventory, bills) must persist in the Motoko backend actor.",
+    "Do not add sign-up, registration, or any multi-user account management."
+  ],
+  "nonGoals": [
+    "Internet Identity or any external authentication provider.",
+    "School logo or school name on printed bills.",
+    "Multi-user roles or permissions.",
+    "Email or SMS notifications.",
+    "External database integration.",
+    "Mobile app or responsive mobile-first design (desktop web is sufficient).",
+    "Barcode or QR code scanning.",
+    "Supplier or purchase order management."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}

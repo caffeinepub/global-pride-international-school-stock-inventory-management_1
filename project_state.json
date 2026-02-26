@@ -1,0 +1,121 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "Stock & Inventory Management System for Global Pride International School — a web app with secure login (username: 'global Pride international school', password: 'gpis@8320'), Dashboard (total items, stock, today's sales & income), Inventory (add/edit/update items with name, quantity, price, category), Billing (item selection, auto-calculate subtotal/grand total, student name, payment mode, print support — no school logo/name on bill), and Reports (date-wise sales: items sold, quantities, earnings, daily totals, remaining stock). Data persists on the Internet Computer backend; billing auto-reduces inventory stock with error handling for overselling.",
+  "architectural_notes": [
+    "Persistent backend on the Internet Computer (ICP) for inventory, billing, and report data",
+    "Hardcoded login credentials — no auth library or sign-up flow needed",
+    "Billing must NOT include school logo or school name on printed bill",
+    "Stock quantity must auto-decrement on each billing transaction with oversell guard"
+  ],
+  "known_issues": [],
+  "isFixRequest": false,
+  "existing_features": [
+    {
+      "id": "feature-implement-a-hardcoded-login-page-that-accepts-only-username-global-pride-international-school-and-password-gpis-8320-there-must-be-no-sign-up-option-on-successful-login-store-a-session-flag-and-redirect-to-the-dashboard-on-failure-show-a-clear-error-message-all-other-pages-must-redirect-to-the-login-page-if-the-user-is-not-authenticated",
+      "title": "Implement a hardcoded login page that accepts only username 'global Pride international school' and password 'gpis@8320'. There must be no sign-up option. On successful login, store a session flag and redirect to the Dashboard. On failure, show a clear error message. All other pages must redirect to the login page if the user is not authenticated.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-a-dashboard-page-accessible-after-login-that-displays-four-summary-cards-total-number-of-items-in-inventory-total-stock-available-sum-of-all-quantities-total-stock-sold-today-and-total-income-today-data-must-be-fetched-from-the-backend-and-refreshed-automatically",
+      "title": "Build a Dashboard page (accessible after login) that displays four summary cards: Total Number of Items in Inventory, Total Stock Available (sum of all quantities), Total Stock Sold Today, and Total Income Today. Data must be fetched from the backend and refreshed automatically.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-an-inventory-page-that-allows-the-user-to-1-add-new-items-by-entering-item-name-quantity-amount-price-per-item-and-selecting-a-category-2-view-all-items-in-a-table-with-columns-item-name-category-quantity-available-amount-per-item-and-an-actions-column-3-edit-any-item-s-details-inline-or-via-a-modal-4-update-stock-quantity-when-new-stock-arrives-increment-existing-quantity-changes-must-persist-to-the-backend",
+      "title": "Build an Inventory page that allows the user to: (1) Add new items by entering Item Name, Quantity, Amount (price per item), and selecting a Category; (2) View all items in a table with columns: Item Name, Category, Quantity Available, Amount per Item, and an Actions column; (3) Edit any item's details inline or via a modal; (4) Update stock quantity when new stock arrives (increment existing quantity). Changes must persist to the backend.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-a-billing-page-where-the-user-can-1-enter-a-student-name-2-select-a-payment-mode-cash-or-upi-3-select-items-from-the-full-inventory-list-enter-quantity-per-item-and-see-subtotal-auto-calculated-as-quantity-priceperitem-4-add-more-line-items-with-an-add-item-button-5-see-grand-total-auto-calculated-as-sum-of-all-subtotals-6-submit-the-bill-which-deducts-stock-from-the-backend-and-stores-the-bill-record-7-print-the-bill-the-printed-output-must-show-student-name-each-item-name-quantity-subtotal-grand-total-and-payment-mode-but-must-not-include-any-school-name-or-school-logo",
+      "title": "Build a Billing page where the user can: (1) Enter a Student Name; (2) Select a Payment Mode (Cash or UPI); (3) Select items from the full inventory list, enter quantity per item, and see Subtotal auto-calculated as quantity × pricePerItem; (4) Add more line items with an 'Add Item' button; (5) See Grand Total auto-calculated as sum of all subtotals; (6) Submit the bill, which deducts stock from the backend and stores the bill record; (7) Print the bill — the printed output must show Student Name, each Item Name, Quantity, Subtotal, Grand Total, and Payment Mode, but must NOT include any school name or school logo.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-a-reports-page-where-the-user-can-select-a-date-and-view-a-report-for-that-day-showing-a-table-of-items-sold-item-name-quantity-sold-amount-earned-per-item-the-grand-total-earned-for-the-day-total-stock-sold-total-units-across-all-items-remaining-stock-per-item-and-total-income-for-the-day-data-is-fetched-from-backend-bill-records-filtered-by-the-selected-date",
+      "title": "Build a Reports page where the user can select a date and view a report for that day showing: a table of items sold (Item Name, Quantity Sold, Amount Earned per Item), the Grand Total earned for the day, Total Stock Sold (total units across all items), Remaining Stock per item, and Total Income for the day. Data is fetched from backend bill records filtered by the selected date.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-consistent-navigation-layout-sidebar-or-top-nav-with-links-to-dashboard-inventory-billing-and-report-modules-visible-on-all-authenticated-pages-include-a-logout-button-that-clears-the-session-and-returns-the-user-to-the-login-page",
+      "title": "Implement a consistent navigation layout (sidebar or top nav) with links to Dashboard, Inventory, Billing, and Report modules, visible on all authenticated pages. Include a Logout button that clears the session and returns the user to the login page.",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-a-clean-professional-visual-theme-throughout-the-app-using-a-warm-neutral-palette-e-g-whites-soft-greys-and-a-single-accent-color-such-as-deep-teal-or-forest-green-use-clear-typography-consistent-card-based-layouts-and-subtle-shadows-the-design-should-feel-institutional-and-user-friendly-appropriate-for-a-school-administration-tool",
+      "title": "Apply a clean, professional visual theme throughout the app using a warm neutral palette (e.g., whites, soft greys, and a single accent color such as deep teal or forest green). Use clear typography, consistent card-based layouts, and subtle shadows. The design should feel institutional and user-friendly — appropriate for a school administration tool.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Login page with hardcoded credentials (username: global Pride international school, password: gpis@8320), no sign-up",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Dashboard module showing total items, total stock, today's sold count, today's income",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Inventory module: add/edit items (name, quantity, price, category), tabular display, update stock on new arrival",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Billing module: select items from inventory, enter quantity, auto-calc subtotal & grand total, add multiple items, capture student name & payment mode (Cash/UPI), print bill (no school logo/name)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Reports module: date-wise view of items sold, quantities, earnings per item, daily grand total, remaining stock, total income",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Auto-reduce inventory stock on billing and prevent overselling with error handling",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Create backend data models and persistent storage in the Motoko actor for: (1) InventoryItem { id, name, category, quantity, pricePerItem }, (2) BillRecord { id, date, studentName, items: [{ itemId, itemName, quantity, subtotal }], grandTotal, paymentMode }, (3) Expose CRUD functions: addItem, updateItem, getItems; createBill, getBillsByDate; and query functions for dashboard stats (totalItems, totalStock, todaySold, todayIncome).",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Global Pride International School Stock & Inventory Management",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}
