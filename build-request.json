@@ -1,67 +1,59 @@
 {
   "kind": "build_request",
-  "title": "From-scratch rewrite of authentication guard and inventory add-item functionality",
-  "projectName": "GPIS Stock Manager",
-  "priority": "high",
+  "title": "Add login page with credentials to Draft 5",
+  "projectName": "Stock & Inventory Manager",
+  "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-16",
-      "text": "Completely rewrite the authentication guard in App.tsx from scratch. On every render of any protected route (Dashboard, Inventory, Billing, Reports), synchronously read the session flag from localStorage. If no valid session flag is found, immediately redirect to /login before mounting any protected page component. The login page must always be the first screen seen when the app is opened fresh or after logout. There must be zero path by which an unauthenticated user can reach a protected page.",
+      "id": "REQ-1",
+      "text": "Implement a login page (frontend/src/components/Login.tsx) that displays a username and password form. On submission, validate the credentials using the existing useAuth hook (frontend/src/hooks/useAuth.ts) which checks hardcoded credentials stored in localStorage. On success, redirect the user to the Dashboard; on failure, show an inline error alert.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-3"
+          "msg-1"
         ],
         "quotes": [
-          "1. both",
-          "3. do it from scratch",
-          "the login page not showing on first load"
+          "add the log in page with credentials to the draft 5 version without changing the rest things"
         ]
       },
       "acceptanceCriteria": [
-        "Opening the app with no session in localStorage always lands on /login",
-        "Navigating directly to /dashboard, /inventory, /billing, or /reports without a session redirects to /login",
-        "After logging in, navigating to /login redirects to /dashboard",
-        "After logout, all protected routes redirect to /login",
-        "No flicker or momentary render of a protected page before redirect"
+        "Login page is accessible at the /login route",
+        "Username and password fields are displayed and functional",
+        "Submitting valid credentials redirects to the Dashboard",
+        "Submitting invalid credentials shows an inline error message",
+        "The login page matches the existing visual theme of the application"
       ]
     },
     {
-      "id": "REQ-17",
-      "text": "Completely rewrite the Add Item form on the Inventory page from scratch. The form must collect Item Name (text, required), Category (select from constants list, required), Quantity (positive integer, required), and Price per Item (positive number, required). On submit, the form must call the backend addItem mutation with the correct argument shape, await the result, show a success notification, clear the form fields, and invalidate the inventory query so the table immediately reflects the new item. Eliminate all previous validation errors, mutation wiring issues, and query-invalidation gaps.",
-      "target": "both",
+      "id": "REQ-2",
+      "text": "Configure the auth guard in frontend/src/App.tsx so that unauthenticated users are redirected to the login page when attempting to access protected routes (Dashboard, Inventory, Billing, Reports). Authenticated users visiting /login should be redirected to the Dashboard. All existing routes and their behavior must remain unchanged.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-3"
+          "msg-1"
         ],
         "quotes": [
-          "Inventory add-item functionality broken — items cannot be added from the Inventory page",
-          "do it from scratch"
+          "add the log in page with credentials to the draft 5 version without changing the rest things"
         ]
       },
       "acceptanceCriteria": [
-        "Filling in all fields and clicking Add Item successfully creates the item on the backend",
-        "The new item appears in the inventory table immediately after submission without a manual page refresh",
-        "Submitting with any field empty shows an inline validation error and does not call the backend",
-        "A success toast or notification is displayed after a successful add",
-        "The form resets to empty state after a successful submission",
-        "If the backend returns an error, a clear error message is displayed to the user"
+        "Unauthenticated users accessing /dashboard, /inventory, /billing, or /reports are redirected to /login",
+        "Authenticated users accessing /login are redirected to /dashboard",
+        "Session state is read from localStorage on every render via the AuthGuard component",
+        "All other routes and page content remain visually and functionally identical to Draft 5"
       ]
     }
   ],
   "constraints": [
-    "All existing features (Dashboard, Billing, Reports, navigation, visual theme, print bill flow) must remain fully intact and unchanged",
-    "Hardcoded credentials must remain: username 'global Pride international school', password 'gpis@8320'",
-    "Session flag must be stored and read from localStorage",
-    "Do not modify any files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or frontend/src/components/ui",
-    "Backend Motoko actor must not have its data models or public API changed"
+    "Do not change any page, component, or backend logic beyond what is needed for the login flow",
+    "Do not modify immutable paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui",
+    "Preserve the Draft 5 version's visual theme and all existing functionality"
   ],
   "nonGoals": [
-    "Rewriting any other page or feature beyond the auth guard and inventory add-item form",
-    "Changing the visual theme or layout",
-    "Modifying the Billing, Reports, or Dashboard page logic",
-    "Adding new backend functions or changing existing backend function signatures",
-    "Implementing Internet Identity or any other authentication mechanism"
+    "Adding Internet Identity or any third-party authentication",
+    "Changing the backend schema or Motoko actor",
+    "Modifying the Dashboard, Inventory, Billing, or Reports pages",
+    "Implementing user registration or password reset flows"
   ],
   "imageRequirements": {
     "required": [],

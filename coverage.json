@@ -1,46 +1,41 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-26T04:59:54.039Z",
+  "generatedAt": "2026-02-26T10:48:46.544Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
     "total": 2,
-    "implemented": 2,
+    "implemented": 0,
     "items": [
       {
-        "id": "REQ-16",
-        "summary": "Completely rewrite the authentication guard in App.tsx from scratch. On every render of any protected route (Dashboard, Inventory, Billing, Reports), synchronously read the session flag from localStorage. If no valid session flag is found, immediately redirect to /login before mounting any protected page component. The login page must always be the first screen seen when the app is opened fresh or after logout. There must be zero path by which an unauthenticated user can reach a protected page.",
-        "status": "implemented",
+        "id": "REQ-1",
+        "summary": "Implement a login page (frontend/src/components/Login.tsx) that displays a username and password form. On submission, validate the credentials using the existing useAuth hook (frontend/src/hooks/useAuth.ts) which checks hardcoded credentials stored in localStorage. On success, redirect the user to the Dashboard; on failure, show an inline error alert.",
+        "status": "missing",
         "plannedFiles": [
-          "frontend/src/App.tsx"
+          "frontend/src/components/Login.tsx",
+          "frontend/src/hooks/useAuth.ts"
         ],
-        "matchedFiles": [
-          "frontend/src/App.tsx"
-        ]
+        "matchedFiles": []
       },
       {
-        "id": "REQ-17",
-        "summary": "Completely rewrite the Add Item form on the Inventory page from scratch. The form must collect Item Name (text, required), Category (select from constants list, required), Quantity (positive integer, required), and Price per Item (positive number, required). On submit, the form must call the backend addItem mutation with the correct argument shape, await the result, show a success notification, clear the form fields, and invalidate the inventory query so the table immediately reflects the new item. Eliminate all previous validation errors, mutation wiring issues, and query-invalidation gaps.",
-        "status": "implemented",
+        "id": "REQ-2",
+        "summary": "Configure the auth guard in frontend/src/App.tsx so that unauthenticated users are redirected to the login page when attempting to access protected routes (Dashboard, Inventory, Billing, Reports). Authenticated users visiting /login should be redirected to the Dashboard. All existing routes and their behavior must remain unchanged.",
+        "status": "missing",
         "plannedFiles": [
-          "frontend/src/pages/Inventory.tsx"
+          "frontend/src/App.tsx",
+          "frontend/src/components/Layout.tsx"
         ],
-        "matchedFiles": [
-          "frontend/src/pages/Inventory.tsx"
-        ]
+        "matchedFiles": []
       }
     ]
   },
   "changedFiles": [
     "build-request.json",
     "feature_evidence.json",
-    "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/App.tsx",
-    "frontend/src/pages/Inventory.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

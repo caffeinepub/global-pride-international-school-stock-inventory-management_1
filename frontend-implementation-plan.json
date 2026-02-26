@@ -1,42 +1,50 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "From-scratch rewrite of authentication guard and inventory add-item functionality",
+  "title": "Add login page with credentials to Draft 5",
   "requirements": [
     {
-      "id": "REQ-16",
-      "summary": "Completely rewrite the authentication guard in App.tsx from scratch to synchronously check localStorage session on every protected route render and immediately redirect to /login if no valid session exists",
+      "id": "REQ-1",
+      "summary": "Implement a login page with username and password form that validates credentials using the existing useAuth hook and redirects to Dashboard on success or shows an error on failure",
       "acceptanceCriteria": [
-        "Opening the app with no session in localStorage always lands on /login",
-        "Navigating directly to /dashboard, /inventory, /billing, or /reports without a session redirects to /login",
-        "After logging in, navigating to /login redirects to /dashboard",
-        "After logout, all protected routes redirect to /login",
-        "No flicker or momentary render of a protected page before redirect"
+        "Login page is accessible at the /login route",
+        "Username and password fields are displayed and functional",
+        "Submitting valid credentials redirects to the Dashboard",
+        "Submitting invalid credentials shows an inline error message",
+        "The login page matches the existing visual theme of the application"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/Login.tsx",
+          "operation": "modify",
+          "description": "Update the Login component to include a username and password form with proper validation, error display using inline alert, and integration with the useAuth hook's login function. On successful authentication, redirect to /dashboard using router navigation. Ensure the styling matches the existing application theme using Tailwind classes and shadcn/ui components for consistency with Draft 5."
+        },
+        {
+          "path": "frontend/src/hooks/useAuth.ts",
+          "operation": "modify",
+          "description": "Ensure the useAuth hook provides a login function that accepts username and password parameters, validates them against hardcoded credentials stored in localStorage, updates the session state in localStorage on success, and returns appropriate success or error responses. Include isAuthenticated and logout functions for use by other components."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Configure auth guards in App.tsx to redirect unauthenticated users to login and authenticated users away from login, protecting Dashboard, Inventory, Billing, and Reports routes",
+      "acceptanceCriteria": [
+        "Unauthenticated users accessing /dashboard, /inventory, /billing, or /reports are redirected to /login",
+        "Authenticated users accessing /login are redirected to /dashboard",
+        "Session state is read from localStorage on every render via the AuthGuard component",
+        "All other routes and page content remain visually and functionally identical to Draft 5"
       ],
       "file_operations": [
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Rewrite the authentication guard from scratch. Remove the existing beforeLoad auth logic. Implement a new synchronous session check that reads from localStorage on every render of protected routes. Ensure the root '/' route redirects to /login when no session exists and to /dashboard when authenticated. Ensure /login redirects to /dashboard when already authenticated. Configure the protected layout route to use a beforeLoad guard that synchronously reads the session flag from localStorage and immediately redirects to /login if the flag is missing or invalid, preventing any protected component from mounting."
-        }
-      ]
-    },
-    {
-      "id": "REQ-17",
-      "summary": "Completely rewrite the Add Item form on the Inventory page from scratch to collect all required fields, validate inputs, call addItem mutation with correct argument shape, display notifications, clear form, and invalidate inventory query",
-      "acceptanceCriteria": [
-        "Filling in all fields and clicking Add Item successfully creates the item on the backend",
-        "The new item appears in the inventory table immediately after submission without a manual page refresh",
-        "Submitting with any field empty shows an inline validation error and does not call the backend",
-        "A success toast or notification is displayed after a successful add",
-        "The form resets to empty state after a successful submission",
-        "If the backend returns an error, a clear error message is displayed to the user"
-      ],
-      "file_operations": [
+          "description": "Add a /login route that renders the Login component wrapped with a LoginGuard (redirects authenticated users to /dashboard). Ensure the existing AuthGuard component wraps all protected routes (Dashboard, Inventory, Billing, Reports) and synchronously checks localStorage session state on every render to redirect unauthenticated users to /login. Preserve all existing route definitions and behavior from Draft 5."
+        },
         {
-          "path": "frontend/src/pages/Inventory.tsx",
+          "path": "frontend/src/components/Layout.tsx",
           "operation": "modify",
-          "description": "Completely rewrite the Add Item form from scratch. Remove all existing add-item form logic. Implement a new controlled form with four fields: Item Name (text input, required), Category (select dropdown using categories from frontend/src/lib/constants.ts, required), Quantity (number input for positive integers, required), and Price per Item (number input for positive numbers, required). Add inline validation that checks all fields are filled before enabling submit. On submit, call the useAddItem mutation hook with arguments matching the backend interface signature: addItem(name: string, category: ItemCategory, quantity: bigint, pricePerItem: number). After successful mutation, display a success toast notification, clear all form fields to empty state, and explicitly invalidate the inventory query using queryClient.invalidateQueries so the InventoryTable re-fetches and displays the new item. Handle mutation errors by displaying a clear error message to the user. Verify the useAddItem hook from frontend/src/hooks/useQueries.ts returns the correct mutation shape before implementing."
+          "description": "Add a Logout button or link in the sidebar navigation that calls the useAuth hook's logout function and redirects the user to /login. Ensure the logout functionality clears the session from localStorage and updates the authentication state immediately."
         }
       ]
     }

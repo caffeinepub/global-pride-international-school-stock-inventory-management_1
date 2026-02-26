@@ -1,10 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Rewrite the authentication guard and the Inventory add-item form from scratch to fix login-on-first-load and broken item creation.
+**Goal:** Add a login page with credential validation to the Stock & Inventory Manager, protecting existing routes without changing any other functionality.
 
 **Planned changes:**
-- Rewrite the authentication guard in App.tsx from scratch: synchronously read the session flag from localStorage on every render of protected routes (Dashboard, Inventory, Billing, Reports); redirect to /login immediately if no valid session is found; redirect to /dashboard if a logged-in user navigates to /login
-- Rewrite the Add Item form on the Inventory page from scratch: fields for Item Name (text, required), Category (select, required), Quantity (positive integer, required), and Price per Item (positive number, required); on submit, call the backend addItem mutation with the correct argument shape, show a success notification, clear the form, and invalidate the inventory query so the table updates immediately; display inline validation errors for empty fields and backend error messages on failure
+- Create a `Login.tsx` component with username and password fields, using the existing `useAuth` hook to validate hardcoded credentials stored in localStorage
+- Show an inline error alert on invalid credentials and redirect to the Dashboard on success
+- Add an `AuthGuard` to `App.tsx` that redirects unauthenticated users to `/login` and authenticated users away from `/login` to `/dashboard`
+- Register the `/login` route in the app router
 
-**User-visible outcome:** The login page always appears first when opening the app or after logout, with no way to reach protected pages without a session. Adding items from the Inventory page works correctly and the new item appears in the table immediately after submission.
+**User-visible outcome:** Users are required to log in before accessing any protected page (Dashboard, Inventory, Billing, Reports). Invalid credentials show an error message; valid credentials grant access to the application.

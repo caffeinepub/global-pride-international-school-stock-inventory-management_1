@@ -1,41 +1,4 @@
 {
   "kind": "feature_evidence_report",
-  "features": [
-    {
-      "featureId": "feature-completely-rewrite-the-authentication-guard-in-app-tsx-from-scratch-on-every-render-of-any-protected-route-dashboard-inventory-billing-reports-synchronously-read-the-session-flag-from-localstorage-if-no-valid-session-flag-is-found-immediately-redirect-to-login-before-mounting-any-protected-page-component-the-login-page-must-always-be-the-first-screen-seen-when-the-app-is-opened-fresh-or-after-logout-there-must-be-zero-path-by-which-an-unauthenticated-user-can-reach-a-protected-page",
-      "featureTitle": "Completely rewrite the authentication guard in App.tsx from scratch. On every render of any protected route (Dashboard, Inventory, Billing, Reports), synchronously read the session flag from localStorage. If no valid session flag is found, immediately redirect to /login before mounting any protected page component. The login page must always be the first screen seen when the app is opened fresh or after logout. There must be zero path by which an unauthenticated user can reach a protected page.",
-      "files": [
-        "frontend/src/App.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-16"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-completely-rewrite-the-add-item-form-on-the-inventory-page-from-scratch-the-form-must-collect-item-name-text-required-category-select-from-constants-list-required-quantity-positive-integer-required-and-price-per-item-positive-number-required-on-submit-the-form-must-call-the-backend-additem-mutation-with-the-correct-argument-shape-await-the-result-show-a-success-notification-clear-the-form-fields-and-invalidate-the-inventory-query-so-the-table-immediately-reflects-the-new-item-eliminate-all-previous-validation-errors-mutation-wiring-issues-and-query-invalidation-gaps",
-      "featureTitle": "Completely rewrite the Add Item form on the Inventory page from scratch. The form must collect Item Name (text, required), Category (select from constants list, required), Quantity (positive integer, required), and Price per Item (positive number, required). On submit, the form must call the backend addItem mutation with the correct argument shape, await the result, show a success notification, clear the form fields, and invalidate the inventory query so the table immediately reflects the new item. Eliminate all previous validation errors, mutation wiring issues, and query-invalidation gaps.",
-      "files": [
-        "frontend/src/pages/Inventory.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-17"
-      ],
-      "confidence": "high"
-    }
-  ]
+  "features": []
 }

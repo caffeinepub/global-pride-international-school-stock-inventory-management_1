@@ -1,205 +1,36 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 11,
-  "summary": "Stock & Inventory Management System for Global Pride International School — a web app with secure login (username: 'global Pride international school', password: 'gpis@8320'), Dashboard (total items, stock, today's sales & income), Inventory (add/edit/update items with name, quantity, price, category), Billing (item selection, auto-calculate subtotal/grand total, student name, payment mode, print support — no school logo/name on bill), and Reports (date-wise sales: items sold, quantities, earnings, daily totals, remaining stock). Data persists on the Internet Computer backend; billing auto-reduces inventory stock with error handling for overselling.",
-  "architectural_notes": [
-    "Persistent backend on the Internet Computer (ICP) for inventory, billing, and report data",
-    "Hardcoded login credentials — no auth library or sign-up flow needed",
-    "Billing must NOT include school logo or school name on printed bill",
-    "Stock quantity must auto-decrement on each billing transaction with oversell guard",
-    "Login page must always appear first; all routes must redirect to login if no session flag is found",
-    "Auth guard and inventory add-item must be rewritten from scratch — patching existing code has not resolved the issues"
-  ],
-  "known_issues": [
-    "Login page not appearing on app load — authentication guard not blocking unauthenticated access",
-    "Billing flow unclear — submit button must auto-save bill and then show a prominent 'Proceed to Print' button",
-    "Inventory add-item functionality broken — items cannot be added from the Inventory page"
-  ],
-  "isFixRequest": true,
-  "existing_features": [
-    {
-      "id": "feature-implement-a-hardcoded-login-page-that-accepts-only-username-global-pride-international-school-and-password-gpis-8320-there-must-be-no-sign-up-option-on-successful-login-store-a-session-flag-and-redirect-to-the-dashboard-on-failure-show-a-clear-error-message-all-other-pages-must-redirect-to-the-login-page-if-the-user-is-not-authenticated",
-      "title": "Implement a hardcoded login page that accepts only username 'global Pride international school' and password 'gpis@8320'. There must be no sign-up option. On successful login, store a session flag and redirect to the Dashboard. On failure, show a clear error message. All other pages must redirect to the login page if the user is not authenticated.",
-      "reqIds": [
-        "REQ-1"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-build-a-dashboard-page-accessible-after-login-that-displays-four-summary-cards-total-number-of-items-in-inventory-total-stock-available-sum-of-all-quantities-total-stock-sold-today-and-total-income-today-data-must-be-fetched-from-the-backend-and-refreshed-automatically",
-      "title": "Build a Dashboard page (accessible after login) that displays four summary cards: Total Number of Items in Inventory, Total Stock Available (sum of all quantities), Total Stock Sold Today, and Total Income Today. Data must be fetched from the backend and refreshed automatically.",
-      "reqIds": [
-        "REQ-3"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-build-an-inventory-page-that-allows-the-user-to-1-add-new-items-by-entering-item-name-quantity-amount-price-per-item-and-selecting-a-category-2-view-all-items-in-a-table-with-columns-item-name-category-quantity-available-amount-per-item-and-an-actions-column-3-edit-any-item-s-details-inline-or-via-a-modal-4-update-stock-quantity-when-new-stock-arrives-increment-existing-quantity-changes-must-persist-to-the-backend",
-      "title": "Build an Inventory page that allows the user to: (1) Add new items by entering Item Name, Quantity, Amount (price per item), and selecting a Category; (2) View all items in a table with columns: Item Name, Category, Quantity Available, Amount per Item, and an Actions column; (3) Edit any item's details inline or via a modal; (4) Update stock quantity when new stock arrives (increment existing quantity). Changes must persist to the backend.",
-      "reqIds": [
-        "REQ-4"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-build-a-billing-page-where-the-user-can-1-enter-a-student-name-2-select-a-payment-mode-cash-or-upi-3-select-items-from-the-full-inventory-list-enter-quantity-per-item-and-see-subtotal-auto-calculated-as-quantity-priceperitem-4-add-more-line-items-with-an-add-item-button-5-see-grand-total-auto-calculated-as-sum-of-all-subtotals-6-submit-the-bill-which-deducts-stock-from-the-backend-and-stores-the-bill-record-7-print-the-bill-the-printed-output-must-show-student-name-each-item-name-quantity-subtotal-grand-total-and-payment-mode-but-must-not-include-any-school-name-or-school-logo",
-      "title": "Build a Billing page where the user can: (1) Enter a Student Name; (2) Select a Payment Mode (Cash or UPI); (3) Select items from the full inventory list, enter quantity per item, and see Subtotal auto-calculated as quantity × pricePerItem; (4) Add more line items with an 'Add Item' button; (5) See Grand Total auto-calculated as sum of all subtotals; (6) Submit the bill, which deducts stock from the backend and stores the bill record; (7) Print the bill — the printed output must show Student Name, each Item Name, Quantity, Subtotal, Grand Total, and Payment Mode, but must NOT include any school name or school logo.",
-      "reqIds": [
-        "REQ-5"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-build-a-reports-page-where-the-user-can-select-a-date-and-view-a-report-for-that-day-showing-a-table-of-items-sold-item-name-quantity-sold-amount-earned-per-item-the-grand-total-earned-for-the-day-total-stock-sold-total-units-across-all-items-remaining-stock-per-item-and-total-income-for-the-day-data-is-fetched-from-backend-bill-records-filtered-by-the-selected-date",
-      "title": "Build a Reports page where the user can select a date and view a report for that day showing: a table of items sold (Item Name, Quantity Sold, Amount Earned per Item), the Grand Total earned for the day, Total Stock Sold (total units across all items), Remaining Stock per item, and Total Income for the day. Data is fetched from backend bill records filtered by the selected date.",
-      "reqIds": [
-        "REQ-6"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-a-consistent-navigation-layout-sidebar-or-top-nav-with-links-to-dashboard-inventory-billing-and-report-modules-visible-on-all-authenticated-pages-include-a-logout-button-that-clears-the-session-and-returns-the-user-to-the-login-page",
-      "title": "Implement a consistent navigation layout (sidebar or top nav) with links to Dashboard, Inventory, Billing, and Report modules, visible on all authenticated pages. Include a Logout button that clears the session and returns the user to the login page.",
-      "reqIds": [
-        "REQ-7"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-apply-a-clean-professional-visual-theme-throughout-the-app-using-a-warm-neutral-palette-e-g-whites-soft-greys-and-a-single-accent-color-such-as-deep-teal-or-forest-green-use-clear-typography-consistent-card-based-layouts-and-subtle-shadows-the-design-should-feel-institutional-and-user-friendly-appropriate-for-a-school-administration-tool",
-      "title": "Apply a clean, professional visual theme throughout the app using a warm neutral palette (e.g., whites, soft greys, and a single accent color such as deep teal or forest green). Use clear typography, consistent card-based layouts, and subtle shadows. The design should feel institutional and user-friendly — appropriate for a school administration tool.",
-      "reqIds": [
-        "REQ-8"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-on-the-billing-page-make-the-add-item-button-visually-prominent-and-clearly-visible-at-all-times-it-should-use-a-distinct-accent-color-e-g-deep-teal-or-forest-green-sufficient-size-and-a-clear-label-e-g-add-item-so-users-can-easily-identify-and-click-it-to-add-more-line-items-to-the-bill",
-      "title": "On the Billing page, make the 'Add Item' button visually prominent and clearly visible at all times. It should use a distinct accent color (e.g., deep teal or forest green), sufficient size, and a clear label (e.g., '+ Add Item') so users can easily identify and click it to add more line items to the bill.",
-      "reqIds": [
-        "REQ-9"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-on-the-billing-page-after-a-bill-is-successfully-submitted-display-a-clearly-visible-print-bill-button-the-button-must-be-styled-prominently-accent-color-adequate-size-clear-label-and-should-appear-in-a-noticeable-position-e-g-in-a-success-state-section-or-modal-so-the-user-can-easily-locate-and-trigger-it-to-print-the-bill",
-      "title": "On the Billing page, after a bill is successfully submitted, display a clearly visible 'Print Bill' button. The button must be styled prominently (accent color, adequate size, clear label) and should appear in a noticeable position — e.g., in a success state section or modal — so the user can easily locate and trigger it to print the bill.",
-      "reqIds": [
-        "REQ-10"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-ensure-that-when-a-bill-is-submitted-on-the-billing-page-the-inventory-stock-quantities-are-automatically-and-immediately-reduced-on-the-backend-for-each-billed-item-after-submission-any-refetch-of-inventory-data-must-reflect-the-updated-lower-quantities-if-the-backend-mutation-already-performs-this-deduction-verify-and-fix-the-frontend-query-invalidation-so-that-inventory-data-is-refreshed-automatically-after-a-successful-bill-creation",
-      "title": "Ensure that when a bill is submitted on the Billing page, the inventory stock quantities are automatically and immediately reduced on the backend for each billed item. After submission, any refetch of inventory data must reflect the updated (lower) quantities. If the backend mutation already performs this deduction, verify and fix the frontend query invalidation so that inventory data is refreshed automatically after a successful bill creation.",
-      "reqIds": [
-        "REQ-11"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-fix-the-authentication-guard-so-that-the-login-page-always-appears-when-the-app-is-first-opened-all-protected-routes-dashboard-inventory-billing-reports-must-redirect-to-the-login-page-if-no-valid-session-flag-is-found-in-localstorage-users-must-not-be-able-to-reach-any-page-other-than-the-login-page-without-first-entering-the-correct-credentials",
-      "title": "Fix the authentication guard so that the login page always appears when the app is first opened. All protected routes (Dashboard, Inventory, Billing, Reports) must redirect to the login page if no valid session flag is found in localStorage. Users must not be able to reach any page other than the login page without first entering the correct credentials.",
-      "reqIds": [
-        "REQ-12"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-billing-page-flow-so-that-clicking-the-submit-button-automatically-saves-the-bill-to-the-backend-deducting-stock-for-each-billed-item-and-then-immediately-displays-a-prominent-proceed-to-print-button-in-a-clearly-visible-success-state-the-separate-save-and-print-actions-must-be-sequential-save-happens-on-submit-and-print-is-only-offered-after-a-successful-save",
-      "title": "Update the Billing page flow so that clicking the submit button automatically saves the bill to the backend (deducting stock for each billed item) and then immediately displays a prominent 'Proceed to Print' button in a clearly visible success state. The separate save and print actions must be sequential: save happens on submit, and print is only offered after a successful save.",
-      "reqIds": [
-        "REQ-13"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-fix-the-authentication-guard-in-app-tsx-so-that-the-login-page-is-always-shown-when-the-app-is-first-opened-or-when-no-valid-session-flag-exists-in-localstorage-the-protected-layout-route-must-check-for-the-session-flag-on-every-render-and-immediately-redirect-unauthenticated-users-to-login-before-any-protected-page-dashboard-inventory-billing-reports-is-rendered-or-mounted",
-      "title": "Fix the authentication guard in App.tsx so that the login page is always shown when the app is first opened or when no valid session flag exists in localStorage. The protected layout route must check for the session flag on every render and immediately redirect unauthenticated users to /login before any protected page (Dashboard, Inventory, Billing, Reports) is rendered or mounted.",
-      "reqIds": [
-        "REQ-14"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-fix-the-add-item-form-on-the-inventory-page-so-that-submitting-the-form-item-name-category-quantity-price-successfully-calls-the-backend-additem-mutation-persists-the-new-item-and-refreshes-the-inventory-table-identify-and-resolve-any-validation-errors-mutation-wiring-issues-or-query-invalidation-gaps-that-prevent-the-item-from-being-created",
-      "title": "Fix the Add Item form on the Inventory page so that submitting the form (item name, category, quantity, price) successfully calls the backend addItem mutation, persists the new item, and refreshes the inventory table. Identify and resolve any validation errors, mutation wiring issues, or query-invalidation gaps that prevent the item from being created.",
-      "reqIds": [
-        "REQ-15"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-completely-rewrite-the-authentication-guard-in-app-tsx-from-scratch-on-every-render-of-any-protected-route-dashboard-inventory-billing-reports-synchronously-read-the-session-flag-from-localstorage-if-no-valid-session-flag-is-found-immediately-redirect-to-login-before-mounting-any-protected-page-component-the-login-page-must-always-be-the-first-screen-seen-when-the-app-is-opened-fresh-or-after-logout-there-must-be-zero-path-by-which-an-unauthenticated-user-can-reach-a-protected-page",
-      "title": "Completely rewrite the authentication guard in App.tsx from scratch. On every render of any protected route (Dashboard, Inventory, Billing, Reports), synchronously read the session flag from localStorage. If no valid session flag is found, immediately redirect to /login before mounting any protected page component. The login page must always be the first screen seen when the app is opened fresh or after logout. There must be zero path by which an unauthenticated user can reach a protected page.",
-      "reqIds": [
-        "REQ-16"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-completely-rewrite-the-add-item-form-on-the-inventory-page-from-scratch-the-form-must-collect-item-name-text-required-category-select-from-constants-list-required-quantity-positive-integer-required-and-price-per-item-positive-number-required-on-submit-the-form-must-call-the-backend-additem-mutation-with-the-correct-argument-shape-await-the-result-show-a-success-notification-clear-the-form-fields-and-invalidate-the-inventory-query-so-the-table-immediately-reflects-the-new-item-eliminate-all-previous-validation-errors-mutation-wiring-issues-and-query-invalidation-gaps",
-      "title": "Completely rewrite the Add Item form on the Inventory page from scratch. The form must collect Item Name (text, required), Category (select from constants list, required), Quantity (positive integer, required), and Price per Item (positive number, required). On submit, the form must call the backend addItem mutation with the correct argument shape, await the result, show a success notification, clear the form fields, and invalidate the inventory query so the table immediately reflects the new item. Eliminate all previous validation errors, mutation wiring issues, and query-invalidation gaps.",
-      "reqIds": [
-        "REQ-17"
-      ],
-      "version": 1
-    }
-  ],
+  "projectStateVersion": 3,
+  "summary": "New project",
+  "architectural_notes": [],
+  "known_issues": [],
+  "isFixRequest": false,
+  "existing_features": [],
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Login page with hardcoded credentials (username: global Pride international school, password: gpis@8320), no sign-up",
+      "summary": "Add login page with credentials to draft 5 version",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-2",
-      "summary": "Dashboard module showing total items, total stock, today's sold count, today's income",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-3",
-      "summary": "Inventory module: add/edit items (name, quantity, price, category), tabular display, update stock on new arrival",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-4",
-      "summary": "Billing module: select items from inventory, enter quantity, auto-calc subtotal & grand total, add multiple items, capture student name & payment mode (Cash/UPI), print bill (no school logo/name)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-5",
-      "summary": "Reports module: date-wise view of items sold, quantities, earnings per item, daily grand total, remaining stock, total income",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-6",
-      "summary": "Auto-reduce inventory stock on billing and prevent overselling with error handling",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-8",
-      "summary": "Create backend data models and persistent storage in the Motoko actor for: (1) InventoryItem { id, name, category, quantity, pricePerItem }, (2) BillRecord { id, date, studentName, items: [{ itemId, itemName, quantity, subtotal }], grandTotal, paymentMode }, (3) Expose CRUD functions: addItem, updateItem, getItems; createBill, getBillsByDate; and query functions for dashboard stats (totalItems, totalStock, todaySold, todayIncome).",
+      "summary": "Implement a login page (frontend/src/components/Login.tsx) that displays a username and password form. On submission, validate the credentials using the existing useAuth hook (frontend/src/hooks/useAuth.ts) which checks hardcoded credentials stored in localStorage. On success, redirect the user to the Dashboard; on failure, show an inline error alert.",
       "reqIds": [
-        "REQ-2"
+        "REQ-1"
       ],
       "status": "pending"
     },
     {
-      "id": "AR-9",
-      "summary": "Make 'Add Item' button clearly visible on Billing page; make 'Print Bill' button clearly visible after billing; ensure stock auto-updates after bill submission",
-      "reqIds": [],
+      "id": "AR-3",
+      "summary": "Configure the auth guard in frontend/src/App.tsx so that unauthenticated users are redirected to the login page when attempting to access protected routes (Dashboard, Inventory, Billing, Reports). Authenticated users visiting /login should be redirected to the Dashboard. All existing routes and their behavior must remain unchanged.",
+      "reqIds": [
+        "REQ-2"
+      ],
       "status": "pending"
     }
   ],
-  "gameProjectType": "none",
-  "projectName": "Global Pride International School Stock & Inventory Management",
+  "projectName": "Stock & Inventory Manager",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }
