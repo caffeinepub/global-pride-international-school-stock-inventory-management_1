@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useGetItems, useCreateBill } from '../hooks/useQueries';
+import { useGetItems, useCreateBill, useGetNextBillNumber } from '../hooks/useQueries';
 import BillLineItem, { type LineItem } from '../components/BillLineItem';
 import PrintableBill from '../components/PrintableBill';
 import { Button } from '@/components/ui/button';
@@ -9,9 +9,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Plus, Printer, CheckCircle, Receipt, RotateCcw, Save } from 'lucide-react';
+import { Plus, Printer, CheckCircle, Receipt, RotateCcw, Save, Hash, Calendar, GraduationCap } from 'lucide-react';
 import { toast } from 'sonner';
 import { PaymentMode } from '../backend';
+import { getISTDateString } from '../lib/dateUtils';
 
 const emptyLine = (): LineItem => ({
   itemId: '',
@@ -25,20 +26,38 @@ const emptyLine = (): LineItem => ({
 const formatCurrency = (amount: number) =>
   new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 2 }).format(amount);
 
+const formatBillNumber = (num: bigint | number): string => {
+  return String(Number(num)).padStart(4, '0');
+};
+
+const CLASS_OPTIONS = [
+  'Nursery', 'LKG', 'UKG',
+  'Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5',
+  'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10',
+  'Class 11', 'Class 12',
+  'Staff',
+];
+
 export default function Billing() {
   const { data: inventoryItems = [] } = useGetItems();
   const createBill = useCreateBill();
+  const { data: nextBillNumber, isLoading: isLoadingBillNumber } = useGetNextBillNumber();
 
   const [studentName, setStudentName] = useState('');
+  const [studentClass, setStudentClass] = useState('');
+  // Default bill date to today's IST date
+  const [billDate, setBillDate] = useState(getISTDateString());
   const [paymentMode, setPaymentMode] = useState<'cash' | 'upi'>('cash');
   const [lineItems, setLineItems] = useState<LineItem[]>([emptyLine()]);
   const [submitError, setSubmitError] = useState('');
   const [lastBill, setLastBill] = useState<{
+    billNumber: string;
+    date: string;
     studentName: string;
+    studentClass: string;
     items: Array<{ itemName: string; quantity: number; pricePerItem: number; subtotal: number }>;
     grandTotal: number;
     paymentMode: string;
-    billId: string;
   } | null>(null);
 
   const grandTotal = lineItems.reduce((sum, li) => sum + li.subtotal, 0);
@@ -101,6 +120,16 @@ export default function Billing() {
       return;
     }
 
+    if (!studentClass.trim()) {
+      setSubmitError('Student class is required');
+      return;
+    }
+
+    if (!billDate) {
+      setSubmitError('Bill date is required');
+      return;
+    }
+
     const validLines = lineItems.filter((li) => li.itemId && li.quantity);
     if (validLines.length === 0) {
       setSubmitError('Please add at least one item');
@@ -121,14 +150,21 @@ export default function Billing() {
     }));
 
     try {
-      const billId = await createBill.mutateAsync({
+      const billNumber = await createBill.mutateAsync({
         studentName: studentName.trim(),
+        studentClass: studentClass.trim(),
+        date: billDate,
         items: billItems,
         paymentMode: paymentMode === 'cash' ? PaymentMode.cash : PaymentMode.upi,
       });
 
+      const formattedBillNumber = formatBillNumber(billNumber);
+
       const billData = {
+        billNumber: formattedBillNumber,
+        date: billDate,
         studentName: studentName.trim(),
+        studentClass: studentClass.trim(),
         items: validLines.map((li) => ({
           itemName: li.itemName,
           quantity: parseInt(li.quantity, 10),
@@ -137,11 +173,10 @@ export default function Billing() {
         })),
         grandTotal,
         paymentMode,
-        billId: String(billId),
       };
 
       setLastBill(billData);
-      toast.success('Bill saved successfully! Stock has been updated.');
+      toast.success(`Bill #${formattedBillNumber} saved! Stock has been updated.`);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to save bill';
       setSubmitError(msg);
@@ -156,9 +191,18 @@ export default function Billing() {
   const handleNewBill = () => {
     setLastBill(null);
     setStudentName('');
+    setStudentClass('');
+    setBillDate(getISTDateString());
     setPaymentMode('cash');
     setLineItems([emptyLine()]);
     setSubmitError('');
+  };
+
+  // Format date for display
+  const formatDisplayDate = (dateStr: string) => {
+    if (!dateStr) return '';
+    const [year, month, day] = dateStr.split('-');
+    return `${day}/${month}/${year}`;
   };
 
   // ── Success State ──────────────────────────────────────────────────────────
@@ -178,20 +222,21 @@ export default function Billing() {
                 <CheckCircle className="w-9 h-9 text-emerald" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-foreground">Bill #{lastBill.billId} Saved!</h2>
+                <h2 className="text-xl font-bold text-foreground">Bill #{lastBill.billNumber} Saved!</h2>
                 <p className="text-muted-foreground mt-1">
-                  {lastBill.studentName} &mdash; {formatCurrency(lastBill.grandTotal)} via{' '}
+                  {lastBill.studentName} &mdash; {lastBill.studentClass} &mdash; {formatCurrency(lastBill.grandTotal)} via{' '}
                   <span className="font-semibold uppercase">{lastBill.paymentMode}</span>
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Inventory stock has been automatically updated.
+                  Date: {formatDisplayDate(lastBill.date)} &nbsp;|&nbsp; Inventory stock has been automatically updated.
                 </p>
               </div>
 
               {/* Bill summary */}
               <div className="w-full max-w-sm bg-background border border-border rounded-lg overflow-hidden mt-2">
-                <div className="px-4 py-2 bg-muted/50 border-b border-border">
+                <div className="px-4 py-2 bg-muted/50 border-b border-border flex items-center justify-between">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Bill Summary</p>
+                  <p className="text-xs font-semibold text-brand">#{lastBill.billNumber}</p>
                 </div>
                 <div className="divide-y divide-border">
                   {lastBill.items.map((item, idx) => (
@@ -234,11 +279,13 @@ export default function Billing() {
 
         {/* Printable bill (hidden on screen, shown on print) */}
         <PrintableBill
+          billNumber={lastBill.billNumber}
+          date={lastBill.date}
           studentName={lastBill.studentName}
+          studentClass={lastBill.studentClass}
           items={lastBill.items}
           grandTotal={lastBill.grandTotal}
           paymentMode={lastBill.paymentMode}
-          billId={lastBill.billId}
         />
       </div>
     );
@@ -261,7 +308,46 @@ export default function Billing() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-5">
-            {/* Student & Payment */}
+
+            {/* Bill Number & Date row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="bill-number" className="flex items-center gap-1.5">
+                  <Hash className="w-3.5 h-3.5 text-brand" />
+                  Bill Number
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="bill-number"
+                    value={
+                      isLoadingBillNumber
+                        ? 'Loading...'
+                        : nextBillNumber !== undefined
+                        ? formatBillNumber(nextBillNumber)
+                        : '—'
+                    }
+                    readOnly
+                    className="bg-muted/50 text-foreground font-semibold cursor-not-allowed select-none"
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">Assigned automatically in serial order</p>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="bill-date" className="flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5 text-brand" />
+                  Bill Date <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="bill-date"
+                  type="date"
+                  value={billDate}
+                  onChange={(e) => setBillDate(e.target.value)}
+                  max={getISTDateString()}
+                />
+              </div>
+            </div>
+
+            {/* Student Name & Class row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label htmlFor="student-name">Student Name <span className="text-destructive">*</span></Label>
@@ -272,6 +358,26 @@ export default function Billing() {
                   placeholder="Enter student name"
                 />
               </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="student-class" className="flex items-center gap-1.5">
+                  <GraduationCap className="w-3.5 h-3.5 text-brand" />
+                  Class <span className="text-destructive">*</span>
+                </Label>
+                <Select value={studentClass} onValueChange={setStudentClass}>
+                  <SelectTrigger id="student-class">
+                    <SelectValue placeholder="Select class" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CLASS_OPTIONS.map((cls) => (
+                      <SelectItem key={cls} value={cls}>{cls}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Payment Mode */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label htmlFor="payment-mode">Payment Mode <span className="text-destructive">*</span></Label>
                 <Select value={paymentMode} onValueChange={(v) => setPaymentMode(v as 'cash' | 'upi')}>
@@ -292,7 +398,6 @@ export default function Billing() {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <p className="text-sm font-semibold text-foreground">Items</p>
-                {/* Prominent Add Item button at the top of the items section */}
                 <Button
                   type="button"
                   onClick={handleAddLine}
@@ -362,8 +467,8 @@ export default function Billing() {
               >
                 {createBill.isPending ? (
                   <span className="flex items-center gap-2">
-                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Saving Bill...
+                    <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                    Saving...
                   </span>
                 ) : (
                   <span className="flex items-center gap-2">

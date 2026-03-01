@@ -103,15 +103,16 @@ export interface BillItem {
     subtotal: number;
 }
 export type ItemId = bigint;
-export type BillId = bigint;
+export type BillNumber = bigint;
 export type ItemCategory = string;
 export interface BillRecord {
-    id: BillId;
     studentName: string;
     date: string;
     grandTotal: number;
+    number: BillNumber;
     paymentMode: PaymentMode;
     items: Array<BillItem>;
+    studentClass: string;
 }
 export enum PaymentMode {
     upi = "upi",
@@ -119,9 +120,10 @@ export enum PaymentMode {
 }
 export interface backendInterface {
     addItem(name: string, category: ItemCategory, quantity: bigint, pricePerItem: number): Promise<ItemId>;
-    createBill(studentName: string, items: Array<BillItem>, paymentMode: PaymentMode): Promise<BillId>;
+    createBill(studentName: string, studentClass: string, items: Array<BillItem>, paymentMode: PaymentMode, istDate: string): Promise<BillNumber>;
     getBillsByDate(date: string): Promise<Array<BillRecord>>;
     getItems(): Promise<Array<InventoryItem>>;
+    getNextBillNumber(): Promise<bigint>;
     getTotals(): Promise<{
         totalStockAvailable: bigint;
         totalIncomeToday: number;
@@ -130,7 +132,7 @@ export interface backendInterface {
     }>;
     updateItem(itemId: ItemId, name: string, category: ItemCategory, quantity: bigint, pricePerItem: number): Promise<void>;
 }
-import type { BillId as _BillId, BillItem as _BillItem, BillRecord as _BillRecord, PaymentMode as _PaymentMode } from "./declarations/backend.did.d.ts";
+import type { BillItem as _BillItem, BillNumber as _BillNumber, BillRecord as _BillRecord, PaymentMode as _PaymentMode } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
     async addItem(arg0: string, arg1: ItemCategory, arg2: bigint, arg3: number): Promise<ItemId> {
@@ -147,17 +149,17 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async createBill(arg0: string, arg1: Array<BillItem>, arg2: PaymentMode): Promise<BillId> {
+    async createBill(arg0: string, arg1: string, arg2: Array<BillItem>, arg3: PaymentMode, arg4: string): Promise<BillNumber> {
         if (this.processError) {
             try {
-                const result = await this.actor.createBill(arg0, arg1, to_candid_PaymentMode_n1(this._uploadFile, this._downloadFile, arg2));
+                const result = await this.actor.createBill(arg0, arg1, arg2, to_candid_PaymentMode_n1(this._uploadFile, this._downloadFile, arg3), arg4);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.createBill(arg0, arg1, to_candid_PaymentMode_n1(this._uploadFile, this._downloadFile, arg2));
+            const result = await this.actor.createBill(arg0, arg1, arg2, to_candid_PaymentMode_n1(this._uploadFile, this._downloadFile, arg3), arg4);
             return result;
         }
     }
@@ -186,6 +188,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.getItems();
+            return result;
+        }
+    }
+    async getNextBillNumber(): Promise<bigint> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getNextBillNumber();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getNextBillNumber();
             return result;
         }
     }
@@ -230,27 +246,30 @@ function from_candid_PaymentMode_n6(_uploadFile: (file: ExternalBlob) => Promise
     return from_candid_variant_n7(_uploadFile, _downloadFile, value);
 }
 function from_candid_record_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
-    id: _BillId;
     studentName: string;
     date: string;
     grandTotal: number;
+    number: _BillNumber;
     paymentMode: _PaymentMode;
     items: Array<_BillItem>;
+    studentClass: string;
 }): {
-    id: BillId;
     studentName: string;
     date: string;
     grandTotal: number;
+    number: BillNumber;
     paymentMode: PaymentMode;
     items: Array<BillItem>;
+    studentClass: string;
 } {
     return {
-        id: value.id,
         studentName: value.studentName,
         date: value.date,
         grandTotal: value.grandTotal,
+        number: value.number,
         paymentMode: from_candid_PaymentMode_n6(_uploadFile, _downloadFile, value.paymentMode),
-        items: value.items
+        items: value.items,
+        studentClass: value.studentClass
     };
 }
 function from_candid_variant_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {

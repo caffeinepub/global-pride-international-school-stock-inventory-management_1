@@ -1,50 +1,22 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add login page with credentials to Draft 5",
+  "title": "Ensure Dashboard totals refresh immediately after bill creation",
   "requirements": [
     {
-      "id": "REQ-1",
-      "summary": "Implement a login page with username and password form that validates credentials using the existing useAuth hook and redirects to Dashboard on success or shows an error on failure",
+      "id": "REQ-13",
+      "summary": "Invalidate and refetch the useGetTotals query after bill creation so Dashboard cards update immediately",
       "acceptanceCriteria": [
-        "Login page is accessible at the /login route",
-        "Username and password fields are displayed and functional",
-        "Submitting valid credentials redirects to the Dashboard",
-        "Submitting invalid credentials shows an inline error message",
-        "The login page matches the existing visual theme of the application"
+        "Creating a new bill causes the Dashboard's 'units sold today' card to update its value without a manual page refresh.",
+        "Creating a new bill causes the Dashboard's 'income today' card to update its value without a manual page refresh.",
+        "The React Query cache for useGetTotals is invalidated as part of the createBill mutation's onSuccess callback.",
+        "The Dashboard continues to use today's IST date when querying totals."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/Login.tsx",
+          "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Update the Login component to include a username and password form with proper validation, error display using inline alert, and integration with the useAuth hook's login function. On successful authentication, redirect to /dashboard using router navigation. Ensure the styling matches the existing application theme using Tailwind classes and shadcn/ui components for consistency with Draft 5."
-        },
-        {
-          "path": "frontend/src/hooks/useAuth.ts",
-          "operation": "modify",
-          "description": "Ensure the useAuth hook provides a login function that accepts username and password parameters, validates them against hardcoded credentials stored in localStorage, updates the session state in localStorage on success, and returns appropriate success or error responses. Include isAuthenticated and logout functions for use by other components."
-        }
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "summary": "Configure auth guards in App.tsx to redirect unauthenticated users to login and authenticated users away from login, protecting Dashboard, Inventory, Billing, and Reports routes",
-      "acceptanceCriteria": [
-        "Unauthenticated users accessing /dashboard, /inventory, /billing, or /reports are redirected to /login",
-        "Authenticated users accessing /login are redirected to /dashboard",
-        "Session state is read from localStorage on every render via the AuthGuard component",
-        "All other routes and page content remain visually and functionally identical to Draft 5"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Add a /login route that renders the Login component wrapped with a LoginGuard (redirects authenticated users to /dashboard). Ensure the existing AuthGuard component wraps all protected routes (Dashboard, Inventory, Billing, Reports) and synchronously checks localStorage session state on every render to redirect unauthenticated users to /login. Preserve all existing route definitions and behavior from Draft 5."
-        },
-        {
-          "path": "frontend/src/components/Layout.tsx",
-          "operation": "modify",
-          "description": "Add a Logout button or link in the sidebar navigation that calls the useAuth hook's logout function and redirects the user to /login. Ensure the logout functionality clears the session from localStorage and updates the authentication state immediately."
+          "description": "Modify the useCreateBill mutation to include an onSuccess callback that invalidates the 'totals' query cache using queryClient.invalidateQueries. This ensures the Dashboard's useGetTotals hook refetches immediately after a bill is successfully created, updating the 'units sold today' and 'income today' cards without requiring a manual page refresh."
         }
       ]
     }

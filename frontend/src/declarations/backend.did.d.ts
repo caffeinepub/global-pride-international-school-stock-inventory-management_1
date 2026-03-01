@@ -10,20 +10,21 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
-export type BillId = bigint;
 export interface BillItem {
   'itemId' : ItemId,
   'itemName' : string,
   'quantity' : bigint,
   'subtotal' : number,
 }
+export type BillNumber = bigint;
 export interface BillRecord {
-  'id' : BillId,
   'studentName' : string,
   'date' : string,
   'grandTotal' : number,
+  'number' : BillNumber,
   'paymentMode' : PaymentMode,
   'items' : Array<BillItem>,
+  'studentClass' : string,
 }
 export interface InventoryItem {
   'id' : ItemId,
@@ -38,9 +39,13 @@ export type PaymentMode = { 'upi' : null } |
   { 'cash' : null };
 export interface _SERVICE {
   'addItem' : ActorMethod<[string, ItemCategory, bigint, number], ItemId>,
-  'createBill' : ActorMethod<[string, Array<BillItem>, PaymentMode], BillId>,
+  'createBill' : ActorMethod<
+    [string, string, Array<BillItem>, PaymentMode, string],
+    BillNumber
+  >,
   'getBillsByDate' : ActorMethod<[string], Array<BillRecord>>,
   'getItems' : ActorMethod<[], Array<InventoryItem>>,
+  'getNextBillNumber' : ActorMethod<[], bigint>,
   'getTotals' : ActorMethod<
     [],
     {

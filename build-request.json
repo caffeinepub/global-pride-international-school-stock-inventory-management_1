@@ -1,59 +1,36 @@
 {
   "kind": "build_request",
-  "title": "Add login page with credentials to Draft 5",
-  "projectName": "Stock & Inventory Manager",
+  "title": "Ensure Dashboard totals refresh immediately after bill creation",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-1",
-      "text": "Implement a login page (frontend/src/components/Login.tsx) that displays a username and password form. On submission, validate the credentials using the existing useAuth hook (frontend/src/hooks/useAuth.ts) which checks hardcoded credentials stored in localStorage. On success, redirect the user to the Dashboard; on failure, show an inline error alert.",
+      "id": "REQ-13",
+      "text": "After a bill is successfully created, invalidate and refetch the useGetTotals query on the Dashboard page so that the 'units sold today' and 'income today' cards reflect the latest data immediately without requiring a manual page refresh.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-4"
         ],
         "quotes": [
-          "add the log in page with credentials to the draft 5 version without changing the rest things"
+          "even the dashboard should gets updated"
         ]
       },
       "acceptanceCriteria": [
-        "Login page is accessible at the /login route",
-        "Username and password fields are displayed and functional",
-        "Submitting valid credentials redirects to the Dashboard",
-        "Submitting invalid credentials shows an inline error message",
-        "The login page matches the existing visual theme of the application"
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "text": "Configure the auth guard in frontend/src/App.tsx so that unauthenticated users are redirected to the login page when attempting to access protected routes (Dashboard, Inventory, Billing, Reports). Authenticated users visiting /login should be redirected to the Dashboard. All existing routes and their behavior must remain unchanged.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-1"
-        ],
-        "quotes": [
-          "add the log in page with credentials to the draft 5 version without changing the rest things"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Unauthenticated users accessing /dashboard, /inventory, /billing, or /reports are redirected to /login",
-        "Authenticated users accessing /login are redirected to /dashboard",
-        "Session state is read from localStorage on every render via the AuthGuard component",
-        "All other routes and page content remain visually and functionally identical to Draft 5"
+        "Creating a new bill causes the Dashboard's 'units sold today' card to update its value without a manual page refresh.",
+        "Creating a new bill causes the Dashboard's 'income today' card to update its value without a manual page refresh.",
+        "The React Query cache for useGetTotals is invalidated as part of the createBill mutation's onSuccess callback.",
+        "The Dashboard continues to use today's IST date when querying totals."
       ]
     }
   ],
   "constraints": [
-    "Do not change any page, component, or backend logic beyond what is needed for the login flow",
-    "Do not modify immutable paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui",
-    "Preserve the Draft 5 version's visual theme and all existing functionality"
+    "Do not change the backend data model or createBill logic.",
+    "All date calculations must continue to use IST (UTC+5:30)."
   ],
   "nonGoals": [
-    "Adding Internet Identity or any third-party authentication",
-    "Changing the backend schema or Motoko actor",
-    "Modifying the Dashboard, Inventory, Billing, or Reports pages",
-    "Implementing user registration or password reset flows"
+    "Real-time WebSocket-based live updates.",
+    "Changes to the Reports page (already handled).",
+    "Changes to billing form or PrintableBill component."
   ],
   "imageRequirements": {
     "required": [],

@@ -1,4 +1,23 @@
 {
   "kind": "feature_evidence_report",
-  "features": []
+  "features": [
+    {
+      "featureId": "feature-after-a-bill-is-successfully-created-invalidate-and-refetch-the-usegettotals-query-on-the-dashboard-page-so-that-the-units-sold-today-and-income-today-cards-reflect-the-latest-data-immediately-without-requiring-a-manual-page-refresh",
+      "featureTitle": "After a bill is successfully created, invalidate and refetch the useGetTotals query on the Dashboard page so that the 'units sold today' and 'income today' cards reflect the latest data immediately without requiring a manual page refresh.",
+      "files": [
+        "frontend/src/hooks/useQueries.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-13"
+      ],
+      "confidence": "high"
+    }
+  ]
 }

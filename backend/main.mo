@@ -1,14 +1,17 @@
-import Text "mo:core/Text";
 import Map "mo:core/Map";
-import Array "mo:core/Array";
+import Nat "mo:core/Nat";
 import Float "mo:core/Float";
-import Order "mo:core/Order";
-import Iter "mo:core/Iter";
 import Runtime "mo:core/Runtime";
+import Array "mo:core/Array";
+import Order "mo:core/Order";
+import Text "mo:core/Text";
+import Iter "mo:core/Iter";
+
+
 
 actor {
   type ItemId = Nat;
-  type BillId = Nat;
+  type BillNumber = Nat;
   type PaymentMode = { #cash; #upi };
   type ItemCategory = Text;
 
@@ -28,28 +31,29 @@ actor {
   };
 
   public type BillRecord = {
-    id : BillId;
+    number : BillNumber;
     date : Text;
     studentName : Text;
+    studentClass : Text;
     items : [BillItem];
     grandTotal : Float;
     paymentMode : PaymentMode;
   };
 
   module InventoryItem {
-    public func compare(bill1 : InventoryItem, bill2 : InventoryItem) : Order.Order {
-      switch (Text.compare(bill1.name, bill2.name)) {
-        case (#equal) { Text.compare(bill1.category, bill2.category) };
+    public func compare(item1 : InventoryItem, item2 : InventoryItem) : Order.Order {
+      switch (Text.compare(item1.name, item2.name)) {
+        case (#equal) { Text.compare(item1.category, item2.category) };
         case (order) { order };
       };
     };
   };
 
   var nextItemId = 0;
-  var nextBillId = 0;
+  var nextBillNumber = 1;
 
   let inventory = Map.empty<ItemId, InventoryItem>();
-  let bills = Map.empty<BillId, BillRecord>();
+  let bills = Map.empty<BillNumber, BillRecord>();
 
   public shared ({ caller }) func addItem(name : Text, category : ItemCategory, quantity : Nat, pricePerItem : Float) : async ItemId {
     let itemId = nextItemId;
@@ -82,34 +86,32 @@ actor {
     inventory.values().toArray().sort();
   };
 
-  // Automatically update stock totals after successful bill addition
-  public shared ({ caller }) func createBill(studentName : Text, items : [BillItem], paymentMode : PaymentMode) : async BillId {
-    let billId = nextBillId;
-    nextBillId += 1;
+  public shared ({ caller }) func createBill(studentName : Text, studentClass : Text, items : [BillItem], paymentMode : PaymentMode, istDate : Text) : async BillNumber {
+    if (items.size() == 0) {
+      Runtime.trap("Bill must have at least 1 item.");
+    };
 
     for (item in items.values()) {
       updateInventoryItem(item.itemId, item.quantity);
     };
 
-    let grandTotal = switch (items.size()) {
-      case (0) { 0.0 };
-      case (_) {
-        let iter = items.values();
-        iter.foldLeft(0.0, func(acc, item) { acc + item.subtotal });
-      };
-    };
+    let grandTotal = items.values().foldLeft(0.0, func(acc, item) { acc + item.subtotal });
+
+    let billNumber = nextBillNumber;
+    nextBillNumber += 1;
 
     let billRecord : BillRecord = {
-      id = billId;
-      date = "2023-10-10";
+      number = billNumber;
+      date = istDate;
       studentName;
+      studentClass;
       items;
       grandTotal;
       paymentMode;
     };
 
-    bills.add(billId, billRecord);
-    billId;
+    bills.add(billNumber, billRecord);
+    billNumber;
   };
 
   func updateInventoryItem(itemId : ItemId, quantitySold : Nat) {
@@ -151,5 +153,9 @@ actor {
       totalStockSoldToday;
       totalIncomeToday;
     };
+  };
+
+  public query ({ caller }) func getNextBillNumber() : async Nat {
+    nextBillNumber;
   };
 };

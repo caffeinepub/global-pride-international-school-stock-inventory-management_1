@@ -21,15 +21,16 @@ export interface BillItem {
     subtotal: number;
 }
 export type ItemId = bigint;
-export type BillId = bigint;
+export type BillNumber = bigint;
 export type ItemCategory = string;
 export interface BillRecord {
-    id: BillId;
     studentName: string;
     date: string;
     grandTotal: number;
+    number: BillNumber;
     paymentMode: PaymentMode;
     items: Array<BillItem>;
+    studentClass: string;
 }
 export enum PaymentMode {
     upi = "upi",
@@ -37,9 +38,10 @@ export enum PaymentMode {
 }
 export interface backendInterface {
     addItem(name: string, category: ItemCategory, quantity: bigint, pricePerItem: number): Promise<ItemId>;
-    createBill(studentName: string, items: Array<BillItem>, paymentMode: PaymentMode): Promise<BillId>;
+    createBill(studentName: string, studentClass: string, items: Array<BillItem>, paymentMode: PaymentMode, istDate: string): Promise<BillNumber>;
     getBillsByDate(date: string): Promise<Array<BillRecord>>;
     getItems(): Promise<Array<InventoryItem>>;
+    getNextBillNumber(): Promise<bigint>;
     getTotals(): Promise<{
         totalStockAvailable: bigint;
         totalIncomeToday: number;

@@ -17,14 +17,15 @@ export const BillItem = IDL.Record({
   'subtotal' : IDL.Float64,
 });
 export const PaymentMode = IDL.Variant({ 'upi' : IDL.Null, 'cash' : IDL.Null });
-export const BillId = IDL.Nat;
+export const BillNumber = IDL.Nat;
 export const BillRecord = IDL.Record({
-  'id' : BillId,
   'studentName' : IDL.Text,
   'date' : IDL.Text,
   'grandTotal' : IDL.Float64,
+  'number' : BillNumber,
   'paymentMode' : PaymentMode,
   'items' : IDL.Vec(BillItem),
+  'studentClass' : IDL.Text,
 });
 export const InventoryItem = IDL.Record({
   'id' : ItemId,
@@ -41,12 +42,13 @@ export const idlService = IDL.Service({
       [],
     ),
   'createBill' : IDL.Func(
-      [IDL.Text, IDL.Vec(BillItem), PaymentMode],
-      [BillId],
+      [IDL.Text, IDL.Text, IDL.Vec(BillItem), PaymentMode, IDL.Text],
+      [BillNumber],
       [],
     ),
   'getBillsByDate' : IDL.Func([IDL.Text], [IDL.Vec(BillRecord)], ['query']),
   'getItems' : IDL.Func([], [IDL.Vec(InventoryItem)], ['query']),
+  'getNextBillNumber' : IDL.Func([], [IDL.Nat], ['query']),
   'getTotals' : IDL.Func(
       [],
       [
@@ -78,14 +80,15 @@ export const idlFactory = ({ IDL }) => {
     'subtotal' : IDL.Float64,
   });
   const PaymentMode = IDL.Variant({ 'upi' : IDL.Null, 'cash' : IDL.Null });
-  const BillId = IDL.Nat;
+  const BillNumber = IDL.Nat;
   const BillRecord = IDL.Record({
-    'id' : BillId,
     'studentName' : IDL.Text,
     'date' : IDL.Text,
     'grandTotal' : IDL.Float64,
+    'number' : BillNumber,
     'paymentMode' : PaymentMode,
     'items' : IDL.Vec(BillItem),
+    'studentClass' : IDL.Text,
   });
   const InventoryItem = IDL.Record({
     'id' : ItemId,
@@ -102,12 +105,13 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'createBill' : IDL.Func(
-        [IDL.Text, IDL.Vec(BillItem), PaymentMode],
-        [BillId],
+        [IDL.Text, IDL.Text, IDL.Vec(BillItem), PaymentMode, IDL.Text],
+        [BillNumber],
         [],
       ),
     'getBillsByDate' : IDL.Func([IDL.Text], [IDL.Vec(BillRecord)], ['query']),
     'getItems' : IDL.Func([], [IDL.Vec(InventoryItem)], ['query']),
+    'getNextBillNumber' : IDL.Func([], [IDL.Nat], ['query']),
     'getTotals' : IDL.Func(
         [],
         [

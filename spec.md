@@ -1,12 +1,9 @@
 # Specification
 
 ## Summary
-**Goal:** Add a login page with credential validation to the Stock & Inventory Manager, protecting existing routes without changing any other functionality.
+**Goal:** Ensure the Dashboard totals refresh automatically after a new bill is created, without requiring a manual page refresh.
 
 **Planned changes:**
-- Create a `Login.tsx` component with username and password fields, using the existing `useAuth` hook to validate hardcoded credentials stored in localStorage
-- Show an inline error alert on invalid credentials and redirect to the Dashboard on success
-- Add an `AuthGuard` to `App.tsx` that redirects unauthenticated users to `/login` and authenticated users away from `/login` to `/dashboard`
-- Register the `/login` route in the app router
+- Invalidate and refetch the `useGetTotals` query cache as part of the `createBill` mutation's `onSuccess` callback so the Dashboard immediately reflects the latest data.
 
-**User-visible outcome:** Users are required to log in before accessing any protected page (Dashboard, Inventory, Billing, Reports). Invalid credentials show an error message; valid credentials grant access to the application.
+**User-visible outcome:** After creating a new bill, the Dashboard's "units sold today" and "income today" cards update their values instantly without needing a manual page refresh.

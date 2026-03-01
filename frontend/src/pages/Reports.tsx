@@ -10,10 +10,12 @@ import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { BarChart3, Calendar, Package } from 'lucide-react';
+import { getISTDateString } from '../lib/dateUtils';
 
 export default function Reports() {
-  const today = new Date().toISOString().split('T')[0];
-  const [selectedDate, setSelectedDate] = useState(today);
+  // Default to today's IST date
+  const todayIST = getISTDateString();
+  const [selectedDate, setSelectedDate] = useState(todayIST);
 
   const { data: bills = [], isLoading: billsLoading, isError: billsError } = useGetBillsByDate(selectedDate);
   const { data: inventoryItems = [], isLoading: invLoading } = useGetItems();
@@ -75,7 +77,7 @@ export default function Reports() {
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
                 className="w-48"
-                max={today}
+                max={todayIST}
               />
             </div>
             {selectedDate && (

@@ -1,25 +1,14 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-26T10:48:46.541Z",
-  "summary": "The diff only modifies project_state.json to record pending feature requests. No actual implementation files were added or modified. Neither REQ-1 (Login.tsx component, useAuth hook, /login route) nor REQ-2 (App.tsx auth guard, AuthGuard component, protected route redirects) have been implemented.",
-  "missing_requirements": [
-    {
-      "id": "REQ-1",
-      "requirement": "Implement a login page (frontend/src/components/Login.tsx) with username/password form, credential validation via useAuth hook, success redirect to Dashboard, and inline error on failure.",
-      "reason": "No frontend/src/components/Login.tsx was added. No frontend/src/hooks/useAuth.ts was created or modified. The /login route was not configured anywhere in the diff.",
-      "evidence": []
-    },
-    {
-      "id": "REQ-2",
-      "requirement": "Configure auth guard in frontend/src/App.tsx to redirect unauthenticated users to /login for protected routes and redirect authenticated users from /login to /dashboard.",
-      "reason": "frontend/src/App.tsx was not modified. No AuthGuard component was created. No route protection logic was implemented.",
-      "evidence": []
-    }
-  ],
+  "generatedAt": "2026-03-01T11:18:38.620Z",
+  "summary": "The diff implements REQ-13 by invalidating the 'totals' query key in the useCreateBill mutation's onSuccess callback, which corresponds to the useGetTotals hook. The Dashboard continues to use IST dates. All four acceptance criteria appear to be addressed.",
+  "missing_requirements": [],
   "hallucinated_features": [],
-  "confidence": 0.98,
+  "confidence": 0.92,
   "changed_files": [
+    "frontend-file-summaries.txt",
+    "frontend/src/hooks/useQueries.ts",
     "project_state.json"
   ]
 }

@@ -47,7 +47,7 @@ export default function Dashboard() {
           icon={ShoppingCart}
           iconColor="text-amber"
           iconBg="bg-amber/10"
-          subtitle="Units sold today"
+          subtitle="Units sold today (IST)"
           loading={isLoading}
         />
         <SummaryCard
@@ -56,7 +56,7 @@ export default function Dashboard() {
           icon={IndianRupee}
           iconColor="text-rose"
           iconBg="bg-rose/10"
-          subtitle="Revenue earned today"
+          subtitle="Revenue earned today (IST)"
           loading={isLoading}
         />
       </div>

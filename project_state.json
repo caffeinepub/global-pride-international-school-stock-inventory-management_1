@@ -1,11 +1,62 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 3,
+  "projectStateVersion": 11,
   "summary": "New project",
-  "architectural_notes": [],
+  "architectural_notes": [
+    "All date-based sales reporting and dashboard metrics must use India Standard Time (IST, UTC+5:30) for grouping, display, and filtering."
+  ],
   "known_issues": [],
   "isFixRequest": false,
-  "existing_features": [],
+  "existing_features": [
+    {
+      "id": "feature-update-the-billing-page-frontend-src-pages-billing-tsx-to-include-1-a-read-only-bill-number-field-displaying-the-next-sequential-bill-number-fetched-from-the-backend-2-a-date-field-pre-filled-with-today-s-date-editable-and-3-a-class-selector-input-field-for-the-student-s-class-all-three-fields-must-be-included-in-the-bill-submission-payload",
+      "title": "Update the Billing page (frontend/src/pages/Billing.tsx) to include: (1) a read-only Bill Number field displaying the next sequential bill number fetched from the backend, (2) a Date field pre-filled with today's date (editable), and (3) a Class selector/input field for the student's class. All three fields must be included in the bill submission payload.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-printablebill-component-frontend-src-components-printablebill-tsx-to-display-the-bill-number-date-and-class-fields-on-the-printed-receipt",
+      "title": "Update the PrintableBill component (frontend/src/components/PrintableBill.tsx) to display the bill number, date, and class fields on the printed receipt.",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-usequeries-ts-hook-to-pass-the-bill-number-date-and-class-fields-in-the-createbill-mutation-and-add-a-query-to-fetch-the-next-available-bill-number-from-the-backend",
+      "title": "Update the useQueries.ts hook to pass the bill number, date, and class fields in the createBill mutation, and add a query to fetch the next available bill number from the backend.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-dashboard-page-frontend-src-pages-dashboard-tsx-to-pass-today-s-date-in-ist-when-querying-totals-usegettotals-so-that-stock-sold-today-and-income-today-cards-always-reflect-the-current-india-date",
+      "title": "Update the Dashboard page (frontend/src/pages/Dashboard.tsx) to pass today's date in IST when querying totals (useGetTotals), so that 'stock sold today' and 'income today' cards always reflect the current India date.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-reports-page-frontend-src-pages-reports-tsx-to-default-the-date-picker-to-today-s-date-in-ist-and-ensure-all-date-based-report-queries-use-ist-dates-so-that-sales-data-is-fetched-and-displayed-correctly-for-the-india-calendar-date",
+      "title": "Update the Reports page (frontend/src/pages/Reports.tsx) to default the date picker to today's date in IST, and ensure all date-based report queries use IST dates so that sales data is fetched and displayed correctly for the India calendar date.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-after-a-bill-is-successfully-created-invalidate-and-refetch-the-usegettotals-query-on-the-dashboard-page-so-that-the-units-sold-today-and-income-today-cards-reflect-the-latest-data-immediately-without-requiring-a-manual-page-refresh",
+      "title": "After a bill is successfully created, invalidate and refetch the useGetTotals query on the Dashboard page so that the 'units sold today' and 'income today' cards reflect the latest data immediately without requiring a manual page refresh.",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    }
+  ],
   "new_feature_requests": [
     {
       "id": "AR-1",
@@ -26,6 +77,58 @@
       "summary": "Configure the auth guard in frontend/src/App.tsx so that unauthenticated users are redirected to the login page when attempting to access protected routes (Dashboard, Inventory, Billing, Reports). Authenticated users visiting /login should be redirected to the Dashboard. All existing routes and their behavior must remain unchanged.",
       "reqIds": [
         "REQ-2"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Add bill number (auto-incremented serial order), date, and class option fields to the billing form. Once a bill is created, automatically update the sales records and inventory. Bill numbers should be assigned sequentially.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Add an auto-incremented bill number field to the backend. Each new bill must be assigned the next sequential bill number (starting from 1 and incrementing by 1). Store the current counter as persistent state in the actor so bill numbers never reset.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Add a 'class' field to the bill data model in the backend. The class field should be a text value representing the student's class (e.g., '1A', '10B'). Store and return this field as part of every bill record.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Ensure that when a bill is created in the backend, the inventory stock for each line item is automatically deducted and the sales record is updated atomically in the same createBill call. If stock is insufficient for any item, the bill creation must fail with an appropriate error.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Add a persistent auto-incremented bill number counter to the backend actor. Each new bill must be assigned the next sequential bill number starting from 1 (displayed as '0001', '0002', etc., zero-padded to 4 digits). The counter must be stored as stable state so it never resets on canister upgrade. The next available bill number must be returned by a query function (e.g., getNextBillNumber) and incremented atomically when a bill is created.",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "When a bill is created, immediately update sales records and reflect them on the Reports page and Dashboard using India timezone (IST, UTC+5:30) for all date grouping and display.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Update the backend createBill function to record the bill's date using India Standard Time (IST, UTC+5:30). All date-based grouping, storage, and querying of bills and sales records must use IST so that reports and dashboard totals reflect the correct India date when a bill is created.",
+      "reqIds": [
+        "REQ-10"
       ],
       "status": "pending"
     }
